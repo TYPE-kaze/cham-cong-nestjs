@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs'
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Employee } from "./employee.model";
@@ -68,10 +69,21 @@ export class EmployeeService {
 			throw new Error('id match no employee')
 		}
 
-		if (employee.dataValues.password !== oldP) {
+
+		console.log("DEBUG")
+		console.log(employee.dataValues)
+		console.log(oldP)
+		if (oldP === 'user' && oldP !== employee.dataValues.password) { //default password 'user'
 			throw new Error('Mật khẩu cũ không đúng')
 		}
-		await employee.update({ password: newP })
 
+		if (oldP !== 'user' && !bcrypt.compareSync(oldP, employee.dataValues.password)) {
+			throw new Error('Mật khẩu cũ không đúng')
+		}
+
+		const hash = bcrypt.hashSync(newP, 10);
+		console.log('Hello !!!!!!!!!!!!!!!')
+		console.log(`Hash: ${hash}`)
+		await employee.update({ password: hash })
 	}
 }
