@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Đổi mật khẩu' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center">Đổi mật khẩu</h1>
+		<div class="col-6 offset-3">
+			<form class="needs-validation" action="/employees/<%=employee.id%>/password?_method=PUT" method="POST" novalidate>
+				<div class="mb-3">
+					<label class="form-label" for="passwordOld">Mật khẩu cũ</label>
+					<input class="form-control" type="password" id="passwordOld" name="passwordOld" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="password">Mật khẩu mới</label>
+					<input class="form-control" type="password" id="password" name="password" required>
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-success" type="submit">Đổi</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

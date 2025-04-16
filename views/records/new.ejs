@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {title: 'Thêm chấm công' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center">Nhập thông tin chấm công</h1>
+		<div class="col-6 offset-3">
+			<form class="needs-validation" action="/records" method="POST" novalidate>
+				<div class="mb-3">
+					<label class="form-label" for="employeeID">Nhân viên</label>
+					<!-- <input class="form-control" type="text" id="name" name="name" placeholder="VD: Nguyễn Văn A" required> -->
+					<input class="form-control" list="datalistOptions" id="employeeID" name="employeeID" placeholder="Gõ để tìm kiếm nhân viên...">
+					<datalist id="datalistOptions">
+						<% for( let i = 0; i < employees.length; i++ ) { %>
+						<% const e = employees[i].dataValues %>
+						<option value="<%=e.id%>"><%=e.name%></option>
+						<% } %>
+					</datalist>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="date">Ngày</label>
+					<input class="form-control" type="date" id="date" name="date" required value="<%=date%>">
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="time">Thời điểm đến</label>
+					<input class="form-control" type="time" id="time" name="time" required value="<%=time%>">
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-success" type="submit">Chấm công</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

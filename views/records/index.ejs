@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Lịch sử đi làm' }); %>
+
+<body>
+	<%- include('../partials/navbar'); %>
+	<div class="container-fluid">
+		<%- include("../partials/flash") %>
+		<div class="row">
+			<main class="col-12 px-4">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1>Lịch sử đi làm</h1>
+				</div>
+				<form action="/records" method="GET" class="mb-3">
+					<div class="input-group">
+						<select class="form-select" id="search-employeeID" name="employeeID">
+							<option value="" <%=selectedEmployeeID === '' ? 'selected' : ''%>>Nhân viên</option>
+							<% for (const employee of employees) { %>
+							<option <%=selectedEmployeeID === employee.id ? 'selected' : ''%> value="<%=employee.id%>"><%=employee.name%></option>
+							<% } %>
+						</select>
+						<select class="form-select" id="search-day" name="day">
+							<option value="" <%=selectedDay === '' ? 'selected' : ''%>>Ngày</option>
+							<% for( let index = 1; index <= 31; index++ ) { %>
+							<option <%=selectedDay === index.toString() ? 'selected' : ''%> value="<%=index%>"><%=index%></option>
+							<% } %>
+						</select>
+						<select class="form-select" id="search-month" name="month">
+							<option value="" <%=selectedMonth === '' ? 'selected' : ''%>>Tháng</option>
+							<% for( let index = 1; index <= 12; index++ ) { %>
+							<option <%=selectedMonth === index.toString() ? 'selected' : ''%> value="<%=index%>"><%=index%></option>
+							<% } %>
+						</select>
+						<select class="form-select" id="search-year" name="year">
+							<option value="" <%=selectedYear === '' ? 'selected' : ''%>>Năm</option>
+							<% for( let index = 2025; index >= 2000; index-- ) { %>
+							<option <%=selectedYear === index.toString() ? 'selected' : ''%> value="<%=index%>"><%=index%></option>
+							<% } %>
+						</select>
+						<button class="btn btn-outline-secondary" type="submit">Tìm kiếm</button>
+					</div>
+				</form>
+				<div class="table-responsive small">
+					<table class="table table-bordered table-hover table-striped">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Nhân viên</th>
+								<th scope="col">Ngày</th>
+								<th scope="col">Thời điểm đến</th>
+								<th scope="col" style="width:100px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i = 0; i < records.length; i++) { %>
+							<% const r = records[i]; const e = r.employee%>
+							<tr>
+								<td>
+									<%=i%>
+								</td>
+								<td>
+									<a href="/employees/<%=e.id%>">
+										<%=e.name%>
+									</a>
+								</td>
+								<td>
+									<%=r.date%>
+								</td>
+								<td>
+									<%=r.time%>
+								</td>
+								<td class="text-center">
+									<div class="btn-group" role="group">
+										<form action="/records/edit" method="GET">
+											<input type="hidden" name="date" value="<%=r.date%>">
+											<input type="hidden" name="employeeID" value="<%=r.employeeID%>">
+											<button type="submit" class="btn btn-success">
+												<i class="bi bi-pencil-square"></i>
+											</button>
+										</form>
+										<form action="/records?_method=DELETE" method="post">
+											<input type="hidden" name="date" value="<%=r.date%>">
+											<input type="hidden" name="employeeID" value="<%=r.employeeID%>">
+											<button type="submit" class="btn btn-danger">
+												<i class="bi bi-trash"></i>
+											</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+
+				</div>
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>

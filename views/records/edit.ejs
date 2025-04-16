@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {title: 'Sửa chấm công' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-5 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center fw-bold">Nhân viên <%=name%></h1>
+		<div class="col-6 offset-3 mt-4">
+			<form class="needs-validation" action="/records?_method=PUT" method="POST" novalidate>
+				<input class="form-control" type="hidden" id="employeeID" name="employeeID" value="<%=employeeID%>">
+				<input class="form-control" type="hidden" id="date" name="date" required value="<%=date%>">
+				<div class="mb-3 text-center">
+					<label class="form-label" for="time">
+						<h3>Hôm <%=date%> đến công ty lúc:</h3>
+					</label>
+					<input class="form-control text-center w-50 mx-auto" type="time" id="time" name="time" required value="<%=time%>">
+				</div>
+				<div class="mb-3 text-center">
+					<button class="btn btn-success" type="submit">Sửa chấm công</button>
+				</div>
+			</form>
+			<form class="text-center" action="/records?_method=DELETE" method="post">
+				<input type="hidden" name="date" value="<%=date%>">
+				<input type="hidden" name="employeeID" value="<%=employeeID%>">
+				<button type="submit" class="btn btn-danger">
+					Xóa chấm công
+				</button>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

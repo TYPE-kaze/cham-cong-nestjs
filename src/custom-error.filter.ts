@@ -1,0 +1,62 @@
+import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
+import { Request, Response } from "express";
+import { NotAuthenticatedException } from "./auth/not-authenticated.exception";
+import { WrongCredentialException } from "./auth/wrong-credential.exception";
+import { ValidationError } from "class-validator";
+import { ValidationException } from "./validation.exception";
+
+@Catch()
+export class CustomErrorFilter implements ExceptionFilter {
+	catch(exception: any, host: ArgumentsHost) {
+		const response = host.switchToHttp().getResponse<Response>();
+		const request = host.switchToHttp().getRequest();
+
+		// TODO: breaks to multiple filters
+		if (exception instanceof NotAuthenticatedException) {
+			request.flash('error', 'Đăng nhập để sử dụng hệ thống')
+			response.redirect('/login')
+			return
+		}
+
+		if (exception instanceof WrongCredentialException) {
+			request.flash('error', 'Sai hoặc không tồn tại thông tin đăng nhập')
+			response.redirect('/login')
+			return
+		}
+
+		if (exception instanceof ValidationException) {
+			const errors = exception.validationErrors;
+			let msg = ''
+
+			if (errors.length === 0) {
+				msg = msg.concat("Validation errors")
+			}
+			else {
+				for (const e of errors) {
+					const constraints = e.constraints;
+					for (const c in constraints) {
+						msg = msg.concat(constraints[c], '. ')
+					}
+				}
+			}
+
+			request.flash('error', msg)
+			const redirectUrl = request?.session?.returnTo
+			if (redirectUrl) {
+				return response.redirect(redirectUrl)
+			}
+			// TODO: If an user then redirect to its show page
+			return response.redirect('/records')
+		}
+
+		const r = exception.response;
+		if (r && r.message && Array.isArray(r.message)) {
+			exception.message = r.message
+		}
+		// default error handler
+		if (exception.status === null) {
+			exception.status = 500;
+		}
+		response.render('error', { err: exception })
+	}
+}

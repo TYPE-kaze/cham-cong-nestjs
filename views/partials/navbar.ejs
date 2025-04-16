@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+	<div class="container-fluid">
+		<a class="navbar-brand" href="/">Trang chủ</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<% if (user) { %>
+				<% if (user.role === 'checker') { %>
+				<li class="nav-item">
+					<a class="nav-link" href="/records/new">Chấm công</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/records">Lịch sử đi làm</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" aria-current="page" href="/employees">DS Nhân viên</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/employees/new">Thêm nhân viên</a>
+				</li>
+				<% } %>
+				<% } %>
+				<% if (!user) { %>
+				<li class="nav-item">
+					<a class="nav-link" href="/login">Đăng nhập</a>
+				</li>
+				<% } %>
+
+				<% if (user) { %>
+				<li class="nav-item">
+					<a class="nav-link" href="/logout">Đăng xuất</a>
+				</li>
+				<% } %>
+			</ul>
+		</div>
+	</div>
+</nav>

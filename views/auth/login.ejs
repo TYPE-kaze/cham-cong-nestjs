@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("../partials/head", {title: "Đăng nhập"}); %>
+
+<body class="d-flex flex-column vh-100">
+	<%- include("../partials/navbar"); %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1>Đăng nhập</h1>
+		<form action="/login" method="POST" class="needs-validation" novalidate>
+			<div class="mb-3">
+				<label class="form-label" for="username">Tên tài khoản/Email</label>
+				<input class="form-control" type="text" id="username" name="username" required autofocus>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label" for="password">Mật khẩu</label>
+				<input class="form-control" type="password" id="password" name="password" required>
+
+			</div>
+			<button class="btn btn-success">Đăng nhập</button>
+		</form>
+	</main>
+</body>
+
+</html>

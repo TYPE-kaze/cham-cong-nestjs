@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/head", {title: "Lỗi"}); %>
+
+<body>
+	<%- include("partials/navbar"); %>
+	<main class="container mt-3 mb-3">
+		<div class="row">
+			<div class="col-6 offset-3">
+				<div class="alert alert-danger" role="alert">
+					<% if (Array.isArray(err.message)) { %>
+					<% for( const m of err.message ) { %>
+					<h3 class="alert-heading">
+						<%=m%>
+					</h3>
+					<% } %>
+					<% } else { %>
+					<h3 class="alert-heading">
+						<%=err.message%>
+					</h3>
+					<% } %>
+					<p><%=err.stack%></p>
+				</div>
+			</div>
+		</div>
+	</main>
+</body>
+
+</html>

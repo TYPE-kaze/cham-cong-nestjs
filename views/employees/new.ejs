@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {title: 'Thêm nhân viên' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center">Nhập thông tin nhân viên</h1>
+		<div class="lodge-form-container col-6 offset-3">
+			<form class="needs-validation" action="/employees" method="POST" novalidate>
+				<div class="mb-3">
+					<label class="form-label" for="name">Họ và tên</label>
+					<input class="form-control" type="text" id="name" name="name" placeholder="VD: Nguyễn Văn A" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="phone">Số điện thoại</label>
+					<input class="form-control" type="text" id="phone" name="phone" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="email">Địa chỉ Email</label>
+					<div class="input-group">
+						<span class="input-group-text">@</span>
+						<input class="form-control" type="email" id="email" name="email" placeholder="VD: tên@vídụ.com" required>
+					</div>
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-success" type="submit">Thêm nhân viên</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

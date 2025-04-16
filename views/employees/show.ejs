@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {title: `Nhân viên ${employee.name}`}) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1>Nhân viên <%=employee.name%> </h1>
+		<h2>Thông tin cá nhân</h2>
+		<ul>
+			<li><b>Tên</b>: <%=employee.name%></li>
+			<li><b>Email</b>: <%=employee.email%></li>
+			<li><b>SĐT</b>: <%=employee.phone%></li>
+		</ul>
+		<h2>Lịch sử đi làm</h2>
+		<div class="table-responsive small">
+			<table class="table table-bordered table-hover table-striped">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Ngày</th>
+						<th scope="col">Thời điểm đến</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% const records = employee.records%>
+					<% for (let i = 0; i < records.length; i++) { %>
+					<% const r = records[i] %>
+					<tr>
+						<td>
+							<%=i%>
+						</td>
+						<td>
+							<%=r.date%>
+						</td>
+						<td>
+							<%=r.time%>
+						</td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+		<a type="button" class="btn btn-warning" href="/employees/editpasswd/<%=employee.id%>">Đổi mật khẩu</a>
+	</main>
+</body>
+
+</html>
