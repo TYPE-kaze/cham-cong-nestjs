@@ -15,7 +15,13 @@
 					<label class="form-label" for="time">
 						<h3>Hôm <%=date%> đến công ty lúc:</h3>
 					</label>
-					<input class="form-control text-center w-50 mx-auto" type="time" id="time" name="time" required value="<%=time%>">
+					<input class="form-control text-center w-50 mx-auto" type="time" id="startTime" name="startTime" required value="<%=startTime%>">
+				</div>
+				<div class="mb-3 text-center">
+					<label class="form-label" for="time">
+						<h3>Hôm <%=date%> rời công ty lúc:</h3>
+					</label>
+					<input class="form-control text-center w-50 mx-auto" type="time" id="endTime" name="endTime" required value="<%=endTime%>">
 				</div>
 				<div class="mb-3 text-center">
 					<button class="btn btn-success" type="submit">Sửa chấm công</button>

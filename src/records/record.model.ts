@@ -21,7 +21,14 @@ export class Record extends Model {
 
 	@Column({
 		type: DataType.TIME,
-		allowNull: false,
+		allowNull: true,
 	})
-	time: string;
+	startTime: string;
+
+
+	@Column({
+		type: DataType.TIME,
+		allowNull: true,
+	})
+	endTime: string;
 }

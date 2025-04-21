@@ -41,22 +41,18 @@ async function bootstrap() {
 		next()
 	})
 
-	// test
-	// app.use((req: Request, res, next) => {
-	// 	console.log(req.session)
-	// 	console.log(req.user)
-	// 	if (req.isAuthenticated) {
-	// 		console.log(req.isAuthenticated())
-	// 	}
-	// 	next()
-	// })
-
 	app.use(methodOverride)
 	app.useGlobalPipes(new ValidationPipe({
 		transform: true,
 		exceptionFactory: errors => new ValidationException(errors)
 	}))
 	app.useGlobalFilters(new CustomErrorFilter())
+
+	// test
+	app.use((req: Request, res, next) => {
+		// console.log(req.body)
+		next()
+	})
 	await app.listen(PORT)
 	console.log(`Listening on port http://localhost:${PORT}`)
 }

@@ -52,7 +52,7 @@ export class RecordService {
 		return records
 	}
 
-	async createOne(date: string, employeeID: UUID, time: string) {
+	async createOne(date: string, employeeID: UUID, startTime: string | undefined, endTime: string | undefined) {
 		const employee = await this.employeeService.findOne(employeeID)
 		if (employee === null) {
 			throw new Error('id matches no employee')
@@ -61,16 +61,16 @@ export class RecordService {
 		if (dup !== null) {
 			throw new Error(`Đã chấm công nhân viên ${employee.dataValues.name} ngày ${date}`)
 		}
-		const record = await (new this.recordModel({ date, time, employeeID })).save()
+		const record = await (new this.recordModel({ date, startTime, endTime, employeeID })).save()
 		return record
 	}
 
-	async updateOne(date: string, employeeID: UUID, time: string) {
+	async updateOne(date: string, employeeID: UUID, startTime: string | undefined, endTime: string | undefined) {
 		let record = await this.recordModel.findOne({ where: { employeeID, date } })
 		if (record === null) {
 			throw new Error('No record matched date and employeeID')
 		}
-		record = await record.update({ time })
+		record = await record.update({ startTime, endTime })
 		return record
 	}
 

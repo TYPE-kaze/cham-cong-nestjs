@@ -35,11 +35,12 @@ export class RecordController {
 
 		const records = await this.recordService.filter(employeeID, day, month, year)
 		const renderRecords = records.map((r) => {
-			const { date, time, employee, employeeID } = r.dataValues
+			const { date, employee, employeeID, startTime, endTime } = r.dataValues
 			const { id, name } = employee.dataValues
 			return {
 				date,
-				time,
+				startTime,
+				endTime,
 				employeeID,
 				employee: { id, name },
 			}
@@ -82,18 +83,21 @@ export class RecordController {
 		const date = getEditFormDTO.date
 		const employeeID = getEditFormDTO.employeeID
 		const record = await this.recordService.findOne(date, employeeID)
-		return { date, employeeID, time: record.dataValues.time, name: record.dataValues.employee.dataValues.name }
+		const { startTime, endTime } = record.dataValues
+		return { date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
 	}
 
 	@Post()
 	@Redirect('/records/new')
 	async createRecord(@Req() req: Request, @Body() createRecordDTO: CreateRecordDTO) {
+		console.log(createRecordDTO)
 		try {
 			const employeeID = createRecordDTO.employeeID
 			const employee = await this.employeeService.findOne(employeeID)
-			const time = createRecordDTO.time
+			const startTime = createRecordDTO.startTime
+			const endTime = createRecordDTO.endTime
 			const date = createRecordDTO.date
-			const record = await this.recordService.createOne(date, employee.dataValues.id, time)
+			const record = await this.recordService.createOne(date, employee.dataValues.id, startTime, endTime)
 			req.flash('success', `Thêm chấm công nhân viên ${employee.dataValues.name}`)
 		}
 		catch (error) {
@@ -135,8 +139,9 @@ export class RecordController {
 		try {
 			const date = updateRecordDTO.date
 			const employeeID = updateRecordDTO.employeeID
-			const time = updateRecordDTO.time
-			const record = await this.recordService.updateOne(date, employeeID, time)
+			const startTime = updateRecordDTO.startTime
+			const endTime = updateRecordDTO.endTime
+			const record = await this.recordService.updateOne(date, employeeID, startTime, endTime)
 			req.flash('success', `Cập nhật chấm công thành công`)
 		}
 		catch (error) {
