@@ -4,12 +4,15 @@ import { NotAuthenticatedException } from "./auth/not-authenticated.exception";
 import { WrongCredentialException } from "./auth/wrong-credential.exception";
 import { ValidationError } from "class-validator";
 import { ValidationException } from "./validation.exception";
+import { FlashError } from "./flash-error";
 
 @Catch()
 export class CustomErrorFilter implements ExceptionFilter {
 	catch(exception: any, host: ArgumentsHost) {
 		const response = host.switchToHttp().getResponse<Response>();
 		const request = host.switchToHttp().getRequest();
+
+		console.log(exception)
 
 		// TODO: breaks to multiple filters
 		if (exception instanceof NotAuthenticatedException) {
@@ -22,6 +25,15 @@ export class CustomErrorFilter implements ExceptionFilter {
 			request.flash('error', 'Sai hoặc không tồn tại thông tin đăng nhập')
 			response.redirect('/login')
 			return
+		}
+
+		if (exception instanceof FlashError) {
+			request.flash('error', exception.message)
+			const redirectUrl = request?.session?.returnTo
+			if (redirectUrl) {
+				return response.redirect(redirectUrl)
+			}
+			return response.redirect('/')
 		}
 
 		if (exception instanceof ValidationException) {

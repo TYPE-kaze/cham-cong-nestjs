@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Giờ làm việc' }); %>
+
+<body>
+	<%- include('../partials/navbar'); %>
+	<div class="container-fluid">
+		<%- include("../partials/flash") %>
+		<div class="row">
+			<main class="col-12 px-4">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1>Danh sách giờ làm việc</h1>
+				</div>
+				<div class="table-responsive small">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Ngày hiệu lực</th>
+								<th scope="col">Giờ đến</th>
+								<th scope="col">Giờ về</th>
+								<th scope="col">Sai số</th>
+								<th scope="col" style="width:100px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i=0; i < rules.length; i++) { %>
+							<% const { id, fromDate, startTime, endTime, deltaMins } = rules[i] %>
+							<% const isCur = id === currentRule.id %>
+							<tr <%= isCur ? 'class=table-primary' : "" %>>
+								<td>
+									<%=i%>
+								</td>
+								<td>
+									<%=fromDate%>
+								</td>
+								<td>
+									<%=startTime%>
+								</td>
+								<td>
+									<%=endTime%>
+								</td>
+								<td>
+									<%=deltaMins%>
+								</td>
+								<td class="text-center">
+									<form action="/worktime-rules/<%=id%>?_method=DELETE" method="post">
+										<div class="btn-group" role="group">
+											<button type="submit" class="btn btn-danger">
+												<i class="bi bi-person-dash"></i>
+											</button>
+										</div>
+									</form>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+
+				</div>
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {title: 'Thêm giờ làm việc mới' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center">Giờ làm việc mới</h1>
+		<div class="col-6 offset-3">
+			<form class="needs-validation" action="/worktime-rules" method="POST" novalidate>
+				<div class="mb-3">
+					<label class="form-label" for="date">Bắt đầu có hiệu lực từ ngày</label>
+					<input class="form-control" type="date" id="fromDate" name="fromDate" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="startTime">Bắt đầu làm việc lúc</label>
+					<input class="form-control" type="time" id="startTime" name="startTime" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="endTime">Kết thúc làm việc lúc</label>
+					<input class="form-control" type="time" id="endTime" name="endTime" required>
+				</div>
+				<div class="mb-3">
+					<label class="form-label" for="deltaMins">Sai số (phút)</label>
+					<input class="form-control" type="number" id="deltaMins" name="deltaMins" required>
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-success" type="submit">Đổi</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

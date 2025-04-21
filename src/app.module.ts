@@ -2,11 +2,10 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { EmployeeModule } from "./employees/employee.module";
-import { APP_FILTER } from "@nestjs/core";
-import { LogExceptionsFilter } from "./log-error.filter";
 import { RecordModule } from "./records/record.module";
 import { CheckerModule } from "./checkers/checker.module";
 import { AuthModule } from "./auth/auth.module";
+import { WorktimeRuleModule } from "./worktime-rules/wtr.module";
 
 @Module({
 	imports: [
@@ -23,7 +22,8 @@ import { AuthModule } from "./auth/auth.module";
 		EmployeeModule,
 		RecordModule,
 		CheckerModule,
-		AuthModule
+		AuthModule,
+		WorktimeRuleModule
 	],
 	controllers: [AppController],
 })
