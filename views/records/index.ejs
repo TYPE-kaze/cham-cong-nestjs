@@ -49,6 +49,8 @@
 								<th scope="col">Ngày</th>
 								<th scope="col">Thời điểm đến</th>
 								<th scope="col">Thời điểm về</th>
+								<th scope="col">Đi muộn</th>
+								<th scope="col">Về sớm</th>
 								<th scope="col" style="width:100px;"></th>
 							</tr>
 						</thead>
@@ -72,6 +74,12 @@
 								</td>
 								<td>
 									<%=r.endTime%>
+								</td>
+								<td>
+									<%=r.isAtWorkLate ? 'Có' : 'Không'%>
+								</td>
+								<td>
+									<%=r.isLeaveEarly ? 'Có' : 'Không'%>
 								</td>
 								<td class="text-center">
 									<div class="btn-group" role="group">

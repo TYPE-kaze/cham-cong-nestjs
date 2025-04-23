@@ -57,7 +57,6 @@ export class EmployeeController {
 		// @Body('passwordOld') oldP: string,
 		// @Body('password') newP: string,
 	) {
-		console.log(req.session)
 		const { password, passwordOld } = body
 		try {
 			await this.employeeService.changePassWD(id, passwordOld, password)

@@ -1,5 +1,5 @@
 import { UUID } from 'node:crypto';
-import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo, AllowNull } from 'sequelize-typescript';
 import { Employee } from 'src/employees/employee.model';
 
 @Table({ tableName: "records" })
@@ -31,4 +31,17 @@ export class Record extends Model {
 		allowNull: true,
 	})
 	endTime: string;
+
+	@Column({
+		type: DataType.BOOLEAN,
+		allowNull: true
+	})
+	isAtWorkLate: boolean
+
+	@Column({
+		type: DataType.BOOLEAN,
+		allowNull: true
+	})
+	isLeaveEarly: boolean
+
 }

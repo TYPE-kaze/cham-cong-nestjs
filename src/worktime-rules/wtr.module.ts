@@ -7,6 +7,7 @@ import { WorktimeRuleService } from "./wtr.service";
 @Module({
 	imports: [SequelizeModule.forFeature([WorktimeRule])],
 	controllers: [WorktimeRuleController],
-	providers: [WorktimeRuleService]
+	providers: [WorktimeRuleService],
+	exports: [WorktimeRuleService]
 })
 export class WorktimeRuleModule { }

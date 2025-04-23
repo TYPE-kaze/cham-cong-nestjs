@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Thống kê ngày' }); %>
+
+<body>
+	<%- include('../partials/navbar'); %>
+	<div class="container-fluid">
+		<%- include("../partials/flash") %>
+		<div class="row">
+			<main class="col-12 px-4">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1>Ngày <%=date%></h1>
+				</div>
+				<div>
+					<h2>Thống kê</h2>
+					<ul>
+						<li><b>Đi muộn</b>: <%=lNum%></li>
+						<li><b>Về sớm</b>: <%=eNum%></li>
+						<li><b>Cả đi muộn và về sớm</b>: <%=bNum%></li>
+					</ul>
+
+				</div>
+
+				<h2 class="pb-2 border-bottom">Chấm công</h2>
+				<form action="/stats/date" method="GET" class="mb-3">
+					<div class="row g-1">
+						<div class="col">
+							<label for="search-date" class="form-label">Ngày</label>
+							<input value="<%=date%>" type="date" name="date" id="search-date" class="form-control">
+						</div>
+						<div class="col">
+							<label for="search-employeeID" class="form-label">Nhân viên</label>
+							<select class="form-select" id="search-employeeID" name="employeeID">
+								<option value="" <%=selectedEmployeeID === '' ? 'selected' : ''%>>Tất cả</option>
+								<% for (const employee of employees) { %>
+								<option <%=selectedEmployeeID === employee.id ? 'selected' : ''%> value="<%=employee.id%>"><%=employee.name%></option>
+								<% } %>
+							</select>
+						</div>
+						<div class="col">
+							<label for="search-isLate" class="form-label">Tiêu chí</label>
+							<select class="form-select" id="search-isLate" name="filter">
+								<option value="" <%= selectedFilter === '' ? 'selected' : ''%>>Tất cả</option>
+								<option value="1" <%= selectedFilter === '1' ? 'selected' : ''%>>Đi muộn</option>
+								<option value="2" <%= selectedFilter === '2' ? 'selected' : ''%>>Về sớm</option>
+								<option value="3" <%= selectedFilter === '3' ? 'selected' : ''%>>Đi muộn và Về sớm</option>
+								<option value="4" <%= selectedFilter === '4' ? 'selected' : ''%>>Đi muộn hoặc Về sớm</option>
+							</select>
+						</div>
+						<div class="col-12">
+							<button class="btn btn-primary" type="submit">Lọc</button>
+						</div>
+					</div>
+				</form>
+				<div class="table-responsive small">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 40px;" class="text-center">#</th>
+								<th scope="col">Nhân viên</th>
+								<th scope="col">Thời điểm đến</th>
+								<th scope="col">Thời điểm về</th>
+								<th scope="col">Đi muộn</th>
+								<th scope="col">Về sớm</th>
+								<th scope="col" style="width: 100px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i = 0; i < records.length; i++) { %>
+							<% const r = records[i]; const e = r.employee%>
+							<tr class="<%=r.rowColorClass%>">
+								<td class="text-center">
+									<%=i%>
+								</td>
+								<td>
+									<a href="/employees/<%=e.id%>">
+										<%=e.name%>
+									</a>
+								</td>
+								<td>
+									<%=r.startTime%>
+								</td>
+								<td>
+									<%=r.endTime%>
+								</td>
+								<td>
+									<%=r.isAtWorkLate ? 'Có' : 'Không'%>
+								</td>
+								<td>
+									<%=r.isLeaveEarly ? 'Có' : 'Không'%>
+								</td>
+								<td class="text-center">
+									<div class="btn-group" role="group">
+										<form action="/records/edit" method="GET">
+											<input type="hidden" name="date" value="<%=r.date%>">
+											<input type="hidden" name="employeeID" value="<%=r.employeeID%>">
+											<button type="submit" class="btn btn-success">
+												<i class="bi bi-pencil-square"></i>
+											</button>
+										</form>
+										<form action="/records?_method=DELETE" method="post">
+											<input type="hidden" name="date" value="<%=r.date%>">
+											<input type="hidden" name="employeeID" value="<%=r.employeeID%>">
+											<button type="submit" class="btn btn-danger">
+												<i class="bi bi-trash"></i>
+											</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+
+				</div>
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>

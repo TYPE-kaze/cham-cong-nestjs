@@ -26,13 +26,26 @@ export class WorktimeRuleService {
 
 	async getCurrentAppliedRule() {
 		const today = new Date()
-		return await this.worktimeRuleModel.findOne({
+		const rule = await this.worktimeRuleModel.findOne({
 			where: {
 				fromDate: { [Op.lte]: today },
 			},
 			order: [['fromDate', 'DESC']],
 			raw: true
 		});
+		if (!rule) throw new FlashError('Hiên không có luật nào')
+		return rule
+	}
+
+	async getRuleOfDate(date: string) {
+		const rule = await this.worktimeRuleModel.findOne({
+			where: {
+				fromDate: { [Op.lte]: date },
+			},
+			order: [['fromDate', 'DESC']],
+		});
+		if (!rule) throw new FlashError(`Hiên không có luật cho ngày ${date}`)
+		return rule
 	}
 
 	async findOne(id: number) {
@@ -49,5 +62,26 @@ export class WorktimeRuleService {
 			throw new FlashError('Không tìm thấy luât nào khớp id')
 		}
 		await rule.destroy()
+	}
+
+	async isStartLate(time: string) {
+		const rule = await this.getCurrentAppliedRule()
+		const ruleD = new Date(`1970-01-01T${rule.startTime}Z`)
+		ruleD.setMinutes(ruleD.getMinutes() + rule.deltaMins);
+		return new Date(`1970-01-01T${time}Z`) > ruleD
+	}
+
+	async isLeaveEarly(leaveTime: string, startTime: string) {
+		const rule = await this.getCurrentAppliedRule()
+		const startTimeD = new Date(`1970-01-01T${startTime}Z`)
+		const leaveTimeD = new Date(`1970-01-01T${leaveTime}Z`)
+		const ruleStartTimeD = new Date(`1970-01-01T${rule.startTime}Z`)
+		const ruleEndTimeD = new Date(`1970-01-01T${rule.endTime}Z`)
+
+		if (startTimeD > ruleStartTimeD) {
+			ruleEndTimeD.setMinutes(ruleEndTimeD.getMinutes() + rule.deltaMins);
+		}
+
+		return leaveTimeD < ruleEndTimeD
 	}
 }

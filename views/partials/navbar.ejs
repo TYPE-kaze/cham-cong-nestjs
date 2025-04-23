@@ -8,23 +8,46 @@
 			<ul class="navbar-nav">
 				<% if (user) { %>
 				<% if (user.role === 'checker') { %>
-				<li class="nav-item">
-					<a class="nav-link" href="/records/new">Chấm công</a>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Chấm công
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#">Linh hoạt</a></li>
+						<li><a class="dropdown-item" href="/records/new">Thủ công</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item" href="/records">Lịch sử các bản ghi</a></li>
+
+					</ul>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/records">Lịch sử đi làm</a>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Nhân viên
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="/employees">Danh sách</a></li>
+						<li><a class="dropdown-item" href="/employees/new">Thêm</a></li>
+					</ul>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" aria-current="page" href="/employees">DS Nhân viên</a>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Giờ làm việc
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="/worktime-rules">Danh sách</a></li>
+						<li><a class="dropdown-item" href="/worktime-rules/new">Đổi giờ</a></li>
+					</ul>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/employees/new">Thêm nhân viên</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/worktime-rules">Danh sách giờ làm việc</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/worktime-rules/new">Đổi giờ làm việc</a>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Thống kê
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="/stats/date">Theo ngày</a></li>
+						<li><a class="dropdown-item" href="/stats/month">Theo tháng</a></li>
+					</ul>
 				</li>
 				<% } %>
 				<% } %>

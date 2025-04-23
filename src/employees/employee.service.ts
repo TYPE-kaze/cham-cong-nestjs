@@ -70,9 +70,6 @@ export class EmployeeService {
 		}
 
 
-		console.log("DEBUG")
-		console.log(employee.dataValues)
-		console.log(oldP)
 		if (oldP === 'user' && oldP !== employee.dataValues.password) { //default password 'user'
 			throw new Error('Mật khẩu cũ không đúng')
 		}
@@ -82,8 +79,6 @@ export class EmployeeService {
 		}
 
 		const hash = bcrypt.hashSync(newP, 10);
-		console.log('Hello !!!!!!!!!!!!!!!')
-		console.log(`Hash: ${hash}`)
 		await employee.update({ password: hash })
 	}
 }

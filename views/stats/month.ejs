@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Thống kê tháng' }); %>
+
+<body>
+	<%- include('../partials/navbar'); %>
+	<div class="container-fluid">
+		<%- include("../partials/flash") %>
+		<div class="row">
+			<main class="col-12 px-4">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1>Tháng <%=month%>, năm <%=year%></h1>
+				</div>
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-2">
+					<div class="d-flex">
+						<h1 class="h2 me-3 mb-0 mt-0">Thống kê</h1>
+						<div class="btn-toolbar mb-2 mb-md-0">
+							<form action="/stats/month" method="get">
+								<div class="input-group">
+									<input value="<%=`${month}-${year}`%>" type="text" class="form-control month-picker" placeholder="Tháng-Năm" name="monthYear">
+									<!-- <select class="form-select" id="inputGroupSelect01">
+										<option value="1"></option>
+										<option value="2">Two</option>
+										<option value="3">Three</option>
+									</select> -->
+									<button class="btn btn-outline-secondary" type="submit">Lọc</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="btn-toolbar mb-2 mb-md-0">
+						<div class="btn-group">
+							<!-- <button type="button" class="btn btn-sm btn-outline-secondary">Export</button> -->
+							<a href="/stats/month/update?month=<%=month%>&year=<%=year%>&_method=POST" class="btn btn-outline-success">Cập nhật</a>
+						</div>
+					</div>
+				</div>
+				<div class="table-responsive small">
+					<table class="table table-bordered table-hover table-striped">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 40px;" class="text-center">#</th>
+								<th scope="col">Nhân viên</th>
+								<th scope="col">Số ngày đi muộn</th>
+								<th scope="col">Số ngày về sớm</th>
+								<th scope="col">Số ngày bị cả hai</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i = 0; i < list.length; i++) { %>
+							<% const item = list[i]%>
+							<tr>
+								<td class="text-center">
+									<%=i%>
+								</td>
+								<td>
+									<%=item.employee.name%>
+								</td>
+								<td>
+									<%=item.numOfDayLate%>
+								</td>
+								<td>
+									<%=item.numOfDayEarly%>
+								</td>
+								<td>
+									<%=item.numofLE%>
+								</td>
+							</tr>
+							<% } %>
+						</tbody>
+					</table>
+
+				</div>
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>

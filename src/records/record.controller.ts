@@ -5,14 +5,16 @@ import { CreateRecordDTO } from "./dto/create-record.dto";
 import { DeleteRecordDTO } from "./dto/delete-record.dto";
 import { Request } from "express";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
-import { literal, Op } from "sequelize";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
 
 @Controller('records')
 @UseGuards(AuthenticatedGuard, CheckerGuard)
 export class RecordController {
-	constructor(private recordService: RecordService, private employeeService: EmployeeService) { }
+	constructor(
+		private recordService: RecordService,
+		private employeeService: EmployeeService
+	) { }
 	@Get('all')
 	async getAll() {
 		const records = await this.recordService.getAll()
@@ -35,13 +37,15 @@ export class RecordController {
 
 		const records = await this.recordService.filter(employeeID, day, month, year)
 		const renderRecords = records.map((r) => {
-			const { date, employee, employeeID, startTime, endTime } = r.dataValues
+			const { date, employee, employeeID, startTime, endTime, isAtWorkLate, isLeaveEarly } = r.dataValues
 			const { id, name } = employee.dataValues
 			return {
 				date,
 				startTime,
 				endTime,
 				employeeID,
+				isAtWorkLate,
+				isLeaveEarly,
 				employee: { id, name },
 			}
 		})
@@ -90,7 +94,6 @@ export class RecordController {
 	@Post()
 	@Redirect('/records/new')
 	async createRecord(@Req() req: Request, @Body() createRecordDTO: CreateRecordDTO) {
-		console.log(createRecordDTO)
 		try {
 			const employeeID = createRecordDTO.employeeID
 			const employee = await this.employeeService.findOne(employeeID)

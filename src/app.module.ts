@@ -6,6 +6,7 @@ import { RecordModule } from "./records/record.module";
 import { CheckerModule } from "./checkers/checker.module";
 import { AuthModule } from "./auth/auth.module";
 import { WorktimeRuleModule } from "./worktime-rules/wtr.module";
+import { StatisticModule } from "./statistic/statistic.module";
 
 @Module({
 	imports: [
@@ -23,7 +24,8 @@ import { WorktimeRuleModule } from "./worktime-rules/wtr.module";
 		RecordModule,
 		CheckerModule,
 		AuthModule,
-		WorktimeRuleModule
+		WorktimeRuleModule,
+		StatisticModule
 	],
 	controllers: [AppController],
 })
