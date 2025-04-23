@@ -1,0 +1,24 @@
+<form action="/records/multi-check" method="GET" class="mb-3">
+	<div class="row g-2">
+		<div class="col">
+			<label for="search-date" class="form-label">Ngày</label>
+			<input value="<%=date%>" type="date" name="date" id="search-date" class="form-control">
+		</div>
+		<div class="col">
+			<label for="search-employeeID" class="form-label">Tên nhân viên</label>
+			<input value="<%=employeeName%>" type="text" name="employeeName" id="search-employeeName" class="form-control" placeholder="VD: Văn A">
+		</div>
+		<div class="col">
+			<label for="search-filter" class="form-label">Tiêu chí</label>
+			<select class="form-select" id="search-filter" name="filter">
+				<option <%= ( filter === '' || filter === undefined ) ? 'selected' : '' %> value="">Tất cả</option>
+				<option <%= filter === '1' ? 'selected' : '' %> value="1">Chưa đến</option>
+				<option <%= filter === '2' ? 'selected' : '' %> value="2">Đã đến</option>
+			</select>
+		</div>
+		<div class="col-12">
+			<button class="btn btn-primary" type="submit">Lọc</button>
+			<a class="btn btn-secondary" href="/records/multi-check">Reset</a>
+		</div>
+	</div>
+</form>

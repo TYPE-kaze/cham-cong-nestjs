@@ -9,7 +9,32 @@ import { Record } from "src/records/record.model";
 
 @Injectable()
 export class EmployeeService {
-	constructor(@InjectModel(Employee) private readonly employeeModel: typeof Employee) { }
+	constructor(
+		@InjectModel(Employee) private readonly employeeModel: typeof Employee,
+	) { }
+
+	async getEmployeeWithRecords(date: string, name?: string) {
+		let where
+		if (name) {
+			where = {
+				name: {
+					[Op.like]: `%${name}%`
+				}
+			}
+		}
+		return await this.employeeModel.findAll(
+			{
+				where,
+				include: [{
+					model: Record,
+					required: false,
+					where: {
+						date,
+					}
+				}]
+			}
+		)
+	}
 
 	async createOne(createEmployeeDTO: CreateEmployeeDTO) {
 		const { name, email, phone } = createEmployeeDTO

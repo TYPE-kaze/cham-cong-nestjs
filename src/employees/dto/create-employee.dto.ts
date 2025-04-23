@@ -3,6 +3,7 @@ import { IsEmail, IsNotEmpty, IsNotIn, IsOptional, IsPhoneNumber, isPhoneNumber,
 export class CreateEmployeeDTO {
 	@IsNotEmpty()
 	@IsString()
+	@Matches(/^[^0-9]+$/) //TODO: whitelist rather than blacklist
 	name: string;
 
 	@IsNotEmpty()
@@ -18,7 +19,7 @@ export class CreateEmployeeDTO {
 	@IsString()
 	@IsOptional()
 	@ValidateIf((o) => o.phone !== '')
-	@Matches(/^[0-9]+$/, { message: "Phone number must contain only digits" })
+	@IsPhoneNumber("VN")
 	phone?: string;
 
 }

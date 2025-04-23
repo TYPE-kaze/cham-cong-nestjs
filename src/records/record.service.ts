@@ -6,6 +6,7 @@ import { Employee } from "src/employees/employee.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { literal, Op, where } from "sequelize";
 import { WorktimeRuleService } from "src/worktime-rules/wtr.service";
+import { FlashError } from "src/flash-error";
 
 @Injectable()
 export class RecordService {
@@ -15,6 +16,34 @@ export class RecordService {
 		@InjectModel(Record) private readonly recordModel: typeof Record
 	) { }
 
+	async checkoutEmployee(employeeID: UUID, date: string) {
+		const record = await this.recordModel.findOne({ where: { employeeID, date } })
+		if (record === null || !record.startTime) {
+			throw new FlashError('Không thể checkout nhân viên chưa check in')
+		}
+		const now = new Date()
+		const hours = String(now.getHours()).padStart(2, '0');
+		const minutes = String(now.getMinutes()).padStart(2, '0');
+		const seconds = String(now.getSeconds()).padStart(2, '0');
+		const endTime = `${hours}:${minutes}:${seconds}`;
+		const startTime = record.startTime
+
+		const isLeaveEarly = await this.worktimeRuleService.isLeaveEarly(endTime, startTime)
+
+		return await record.update({ endTime, isLeaveEarly })
+	}
+
+	async checkinEmployee(employeeID: UUID, date: string) {
+		const [record, _] = await this.recordModel.findOrCreate({ where: { employeeID, date } })
+		const now = new Date()
+		const hours = String(now.getHours()).padStart(2, '0');
+		const minutes = String(now.getMinutes()).padStart(2, '0');
+		const seconds = String(now.getSeconds()).padStart(2, '0');
+		const startTime = `${hours}:${minutes}:${seconds}`;
+		const isAtWorkLate = await this.worktimeRuleService.isStartLate(startTime)
+
+		return await record.update({ startTime, isAtWorkLate })
+	}
 	async findOne(date: string, employeeID: UUID) {
 		const record = await this.recordModel.findOne({ where: { employeeID, date }, include: [Employee] })
 		if (record === null) throw new Error('No record matched date and employeeID')
@@ -49,7 +78,6 @@ export class RecordService {
 			]
 		}
 
-		console.log(where)
 		const records = await this.recordModel.findAll({
 			where,
 			include: [Employee],

@@ -1,0 +1,51 @@
+<tr class="<%=r.rowColorClass%>">
+	<td class="text-center">
+		<%=i%>
+	</td>
+	<td>
+		<a href="/employees/<%=e.id%>">
+			<%=e.name%>
+		</a>
+	</td>
+	<td>
+		<%=r.startTime%>
+	</td>
+	<td>
+		<%=r.endTime%>
+	</td>
+	<td>
+		<% let isAtWorkLateText %>
+		<% if ( typeof r.isAtWorkLate === 'boolean' ) { %>
+		<% isAtWorkLateText = r.isAtWorkLate ? 'Có' : 'Không' %>
+		<% } else { %>
+		<% isAtWorkLateText = '' %>
+		<% } %>
+		<%=isAtWorkLateText%>
+	</td>
+	<td>
+		<% let isLeaveEarlyText %>
+		<% if ( typeof r.isLeaveEarly === 'boolean' ) { %>
+		<% isLeaveEarlyText = r.isLeaveEarly ? 'Có' : 'Không' %>
+		<% } else { %>
+		<% isLeaveEarlyText = '' %>
+		<% } %>
+		<%=isLeaveEarlyText%>
+	</td>
+	<td class="text-end">
+		<div class="btn-group" role="group">
+			<% if ( !r.isCheckin ) { %>
+			<a class="btn btn-success" href="/records/checkin?employeeID=<%=e.id%>&date=<%=r.date%>&_method=POST">
+				<i class="bi bi-box-arrow-in-down-left"></i>
+			</a>
+			<% } %>
+			<% if ( !r.isCheckout) { %>
+			<a class="btn btn-danger" href="/records/checkout?employeeID=<%=e.id%>&date=<%=r.date%>&_method=POST">
+				<i class="bi bi-box-arrow-up-right"></i>
+			</a>
+			<% } %>
+			<a href="/records/edit?date=<%=r.date%>&employeeID=<%=e.id%>" class="btn btn-secondary">
+				<i class="bi bi-pencil-square"></i>
+			</a>
+		</div>
+	</td>
+</tr>

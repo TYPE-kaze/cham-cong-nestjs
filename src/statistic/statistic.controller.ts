@@ -94,8 +94,6 @@ export class StatisticController {
 			year = frags[1]
 		}
 
-		console.log('Hello')
-		console.log(month, year)
 		const list = await this.statService.getStatOfMonth(month, year)
 		return { month: month.replace(/^[1-9]$/, '0$&'), year, list }
 	}

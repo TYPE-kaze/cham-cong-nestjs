@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, ParseIntPipe, Post, Put, Query, Redirect, Render, Req, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Redirect, Render, Req, Res, UseGuards, UseInterceptors } from "@nestjs/common";
 import { RecordService } from "./record.service";
 import { EmployeeService } from "src/employees/employee.service";
 import { CreateRecordDTO } from "./dto/create-record.dto";
@@ -7,6 +7,7 @@ import { Request } from "express";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
+import { UUID } from "crypto";
 
 @Controller('records')
 @UseGuards(AuthenticatedGuard, CheckerGuard)
@@ -15,10 +16,117 @@ export class RecordController {
 		private recordService: RecordService,
 		private employeeService: EmployeeService
 	) { }
+
 	@Get('all')
 	async getAll() {
 		const records = await this.recordService.getAll()
 		return records
+	}
+
+	@Post('checkout')
+	async checkoutEmployeeNow(
+		@Query('employeeID', ParseUUIDPipe) employeeID: UUID,
+		@Query('date') date: string,
+		@Req() req,
+		@Res() res,
+
+	) {
+		await this.recordService.checkoutEmployee(employeeID, date)
+		req.flash('success', `Checkout thành công`)
+		const redirectUrl = req?.session?.returnTo
+		if (redirectUrl) {
+			return res.redirect(redirectUrl)
+		}
+		return res.redirect('/records/multi-check')
+	}
+
+	@Post('checkin')
+	async checkinEmployeeNow(
+		@Query('employeeID', ParseUUIDPipe) employeeID: UUID,
+		@Query('date') date: string,
+		@Req() req,
+		@Res() res,
+
+	) {
+		await this.recordService.checkinEmployee(employeeID, date)
+		req.flash('success', `Checkin thành công`)
+		const redirectUrl = req?.session?.returnTo
+		if (redirectUrl) {
+			return res.redirect(redirectUrl)
+		}
+		return res.redirect('/records/multi-check')
+	}
+
+	@Get('multi-check')
+	@UseInterceptors(StoreReturnToInterceptor)
+	@Render('records/multi-check')
+	async getChamCongPage(
+		@Query('date') date: string | undefined,
+		@Query('employeeName') employeeName: string | undefined,
+		@Query('filter') filter: string | undefined,
+	) {
+		if (!date || date === '') {
+			date = new Date(Date.now()).toISOString().split('T')[0];
+		}
+
+		const employeeWithRecordList = await this.employeeService.getEmployeeWithRecords(date, employeeName)
+		let lNum = 0, eNum = 0, bNum = 0
+		let renderRecords = employeeWithRecordList.map((e) => {
+			let startTime, endTime, isAtWorkLate, isLeaveEarly
+			if (e.records.length === 1) { // has not yet been checked that day
+				const r = e.records[0]
+				startTime = r.startTime
+				endTime = r.endTime
+				isAtWorkLate = r.isAtWorkLate
+				isLeaveEarly = r.isLeaveEarly
+			}
+			const isCheckin = startTime ? true : false
+			const isCheckout = endTime ? true : false
+
+			let rowColorClass = ''
+			if (isAtWorkLate && isLeaveEarly) {
+				lNum++
+				eNum++
+				bNum++
+				rowColorClass = 'table-danger'
+			}
+			else if (isAtWorkLate && !isLeaveEarly) {
+				lNum++
+				rowColorClass = 'table-warning'
+			}
+			else if (!isAtWorkLate && isLeaveEarly) {
+				eNum++
+				rowColorClass = 'table-secondary'
+			}
+			return {
+				startTime,
+				endTime,
+				date,
+				isAtWorkLate,
+				isLeaveEarly,
+				rowColorClass,
+				employee: e,
+				isCheckin,
+				isCheckout
+			}
+		})
+
+		//Filter
+		if (filter === '1') {
+			renderRecords = renderRecords.filter((r) => !r.isCheckin)
+		} else if (filter === '2') {
+			renderRecords = renderRecords.filter((r) => r.isCheckin)
+		}
+
+		return {
+			records: renderRecords,
+			filter,
+			date,
+			employeeName,
+			lNum,
+			eNum,
+			bNum
+		}
 	}
 
 	@Get()
@@ -81,7 +189,7 @@ export class RecordController {
 	}
 
 	@Get('edit')
-	@UseInterceptors(StoreReturnToInterceptor)
+	// @UseInterceptors(StoreReturnToInterceptor)
 	@Render('records/edit')
 	async getEditForm(@Query() getEditFormDTO) {
 		const date = getEditFormDTO.date
@@ -92,8 +200,11 @@ export class RecordController {
 	}
 
 	@Post()
-	@Redirect('/records/new')
-	async createRecord(@Req() req: Request, @Body() createRecordDTO: CreateRecordDTO) {
+	async createRecord(
+		@Req() req,
+		@Res() res,
+		@Body() createRecordDTO: CreateRecordDTO,
+	) {
 		try {
 			const employeeID = createRecordDTO.employeeID
 			const employee = await this.employeeService.findOne(employeeID)
@@ -101,7 +212,12 @@ export class RecordController {
 			const endTime = createRecordDTO.endTime
 			const date = createRecordDTO.date
 			const record = await this.recordService.createOne(date, employee.dataValues.id, startTime, endTime)
-			req.flash('success', `Thêm chấm công nhân viên ${employee.dataValues.name}`)
+			req.flash('success', `Checkout thành công`)
+			const redirectUrl = req?.session?.returnTo
+			if (redirectUrl) {
+				return res.redirect(redirectUrl)
+			}
+			return res.redirect('/records/multi-check')
 		}
 		catch (error) {
 			let msg: string;
@@ -116,13 +232,20 @@ export class RecordController {
 	}
 
 	@Delete()
-	@Redirect('/records')
-	async deleteRecord(@Req() req: Request, @Body() deleleRecordDTO: DeleteRecordDTO) {
+	async deleteRecord(
+		@Req() req,
+		@Res() res,
+		@Body() deleleRecordDTO: DeleteRecordDTO) {
 		try {
 			const date = deleleRecordDTO.date
 			const employeeID = deleleRecordDTO.employeeID
 			await this.recordService.deleteOne(date, employeeID)
 			req.flash('success', `Xóa chấm công thành công`)
+			const redirectUrl = req?.session?.returnTo
+			if (redirectUrl) {
+				return res.redirect(redirectUrl)
+			}
+			return res.redirect('/records/multi-check')
 		}
 		catch (error) {
 			let msg: string;
@@ -137,8 +260,11 @@ export class RecordController {
 	}
 
 	@Put()
-	@Redirect('/records')
-	async updateRecord(@Req() req: Request, @Body() updateRecordDTO: CreateRecordDTO) {
+	async updateRecord(
+		@Req() req,
+		@Res() res,
+		@Body() updateRecordDTO: CreateRecordDTO
+	) {
 		try {
 			const date = updateRecordDTO.date
 			const employeeID = updateRecordDTO.employeeID
@@ -146,6 +272,11 @@ export class RecordController {
 			const endTime = updateRecordDTO.endTime
 			const record = await this.recordService.updateOne(date, employeeID, startTime, endTime)
 			req.flash('success', `Cập nhật chấm công thành công`)
+			const redirectUrl = req?.session?.returnTo
+			if (redirectUrl) {
+				return res.redirect(redirectUrl)
+			}
+			return res.redirect('/records/multi-check')
 		}
 		catch (error) {
 			let msg: string;
@@ -157,5 +288,6 @@ export class RecordController {
 			}
 			req.flash('error', msg)
 		}
+
 	}
 }

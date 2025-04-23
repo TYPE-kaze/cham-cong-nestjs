@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Chấm công linh hoạt' }); %>
+
+<body>
+	<%- include('../partials/navbar'); %>
+	<div class="container-fluid">
+		<%- include("../partials/flash") %>
+		<div class="row">
+			<main class="col-12 px-4">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1>Chấm công ngày <%=date%></h1>
+				</div>
+				<div>
+					<h2>Thống kê</h2>
+					<ul>
+						<li><b>Đi muộn</b>: <%=lNum%></li>
+						<li><b>Về sớm</b>: <%=eNum%></li>
+						<li><b>Cả đi muộn và về sớm</b>: <%=bNum%></li>
+					</ul>
+				</div>
+
+				<h2 class="pb-2 border-bottom">Chấm công</h2>
+				<%- include("search-toolbar", { date, employeeName, filter }) %>
+				<div class="table-responsive small">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 40px;" class="text-center">#</th>
+								<th scope="col">Nhân viên</th>
+								<th scope="col">Thời điểm đến</th>
+								<th scope="col">Thời điểm về</th>
+								<th scope="col">Đi muộn</th>
+								<th scope="col">Về sớm</th>
+								<th scope="col" style="width: 100px;">Thao tác</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for (let i = 0; i < records.length; i++) { %>
+							<% const r = records[i]; const e = r.employee%>
+							<%- include("multi-check-row", { i, r, e }) %>
+							<% } %>
+						</tbody>
+					</table>
+
+				</div>
+			</main>
+		</div>
+	</div>
+</body>
+
+</html>
