@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Nhập chấm công' }) %>
+
+<body>
+	<%- include('../partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("../partials/flash") %>
+		<h1 class="text-center">Nhập chấm công từ file</h1>
+		<div class="col-6 offset-3">
+			<form enctype="multipart/form-data" action="/records/import" method="POST" novalidate>
+				<div class="mb-3">
+					<label class="form-label" for="year">Năm</label>
+					<input class="form-control" type="number" id="year" name="year" required value="<%=currentYear%>">
+				</div>
+				<div class="mb-3">
+					<label for="formFile" class="form-label">File Excel (.xlsx)</label>
+					<input name="formFile" class="form-control" type="file" id="formFile">
+				</div>
+				<div class="mb-3">
+					<button class="btn btn-success" type="submit">Cập nhật</button>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+
+</html>

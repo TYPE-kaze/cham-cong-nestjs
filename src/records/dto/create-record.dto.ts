@@ -30,4 +30,10 @@ export class CreateRecordDTO {
 		message: 'Time must be in the format HH:mm:ss',
 	})
 	endTime?: string;
+
+
+	@IsString()
+	@IsOptional()
+	@Transform(({ value }) => value === '' ? undefined : value)
+	reason?: string;
 }

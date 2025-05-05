@@ -6,33 +6,35 @@
 	<%- include('../partials/navbar') %>
 	<main class="container mt-5 mb-3">
 		<%- include("../partials/flash") %>
-		<h1 class="text-center fw-bold">Nhân viên <%=name%></h1>
+		<h1 class="text-center fw-bold">Sửa chấm công</h1>
 		<div class="col-6 offset-3 mt-4">
-			<form class="needs-validation" action="/records?_method=PUT" method="POST" novalidate>
+			<form action="/records?_method=PUT" method="POST" novalidate>
 				<input class="form-control" type="hidden" id="employeeID" name="employeeID" value="<%=employeeID%>">
 				<input class="form-control" type="hidden" id="date" name="date" required value="<%=date%>">
-				<div class="mb-3 text-center">
-					<label class="form-label" for="time">
-						<h3>Hôm <%=date%> đến công ty lúc:</h3>
-					</label>
-					<input class="form-control text-center w-50 mx-auto" type="time" id="startTime" name="startTime" required value="<%=startTime%>">
+				<div class="mb-3">
+					<label for="">Nhân viên</label>
+					<input disabled value="<%=name%>" type="text" class="form-control">
 				</div>
-				<div class="mb-3 text-center">
-					<label class="form-label" for="time">
-						<h3>Hôm <%=date%> rời công ty lúc:</h3>
-					</label>
-					<input class="form-control text-center w-50 mx-auto" type="time" id="endTime" name="endTime" required value="<%=endTime%>">
+				<div class="mb-3">
+					<label for="">Ngày</label>
+					<input disabled value="<%=date%>" type="date" class="form-control">
 				</div>
-				<div class="mb-3 text-center">
-					<button class="btn btn-success" type="submit">Sửa chấm công</button>
+				<div class="row mb-3">
+					<div class="col-6">
+						<label class="form-label" for="startTime"> Đến lúc </label>
+						<input class="form-control" type="time" id="startTime" name="startTime" required value="<%=startTime%>">
+					</div>
+					<div class="col-6">
+						<label class="form-label" for="endTime"> Tan làm lúc </label>
+						<input class="form-control" type="time" id="endTime" name="endTime" required value="<%=endTime%>">
+					</div>
 				</div>
-			</form>
-			<form class="text-center" action="/records?_method=DELETE" method="post">
-				<input type="hidden" name="date" value="<%=date%>">
-				<input type="hidden" name="employeeID" value="<%=employeeID%>">
-				<button type="submit" class="btn btn-danger">
-					Xóa chấm công
-				</button>
+				<div class="mb-3">
+					<label for="reason" class="form-label">Giải trình</label>
+					<textarea class="form-control" name="reason" id="reason" rows="4"><%= reason %></textarea>
+				</div>
+				<button class="btn btn-success" type="submit">Cập nhật</button>
+				<a class="btn btn-danger" href="/records?date=<%=date%>&employeeID=<%=employeeID%>&_method=DELETE">Xóa</a>
 			</form>
 		</div>
 	</main>

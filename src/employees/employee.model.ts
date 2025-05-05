@@ -6,7 +6,7 @@ import { Record } from 'src/records/record.model';
 export class Employee extends Model {
 	@PrimaryKey
 	@Column({ type: DataType.UUID, defaultValue: randomUUID })
-	declare id: UUID
+	id: UUID
 
 	@Column({ allowNull: false })
 	name: string;
@@ -15,7 +15,10 @@ export class Employee extends Model {
 	@Column({ allowNull: false })
 	email: string;
 
-	@Column({ defaultValue: 'user', allowNull: false })
+	@Column({
+		defaultValue: 'user',
+		allowNull: false
+	})
 	password: string;
 
 	@Column
@@ -23,4 +26,16 @@ export class Employee extends Model {
 
 	@HasMany(() => Record)
 	records: Record[]
+
+	@Column({
+		type: DataType.TIME,
+		allowNull: true,
+	})
+	startWorkTime: string;
+
+	@Column({
+		type: DataType.TIME,
+		allowNull: true,
+	})
+	endWorkTime: string;
 }

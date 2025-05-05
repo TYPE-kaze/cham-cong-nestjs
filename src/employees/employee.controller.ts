@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Redirect, Render, Req, Res, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Redirect, Render, Req, Res, UseGuards, UseInterceptors } from "@nestjs/common";
 import { EmployeeService } from "./employee.service";
 import { CreateEmployeeDTO } from "./dto/create-employee.dto";
 import { UUID } from "node:crypto";
@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
-import { ChangePassWDDTO } from "./dto/change-passwd.dto";
+import { ChangePasswordDTO } from "./dto/change-passwd.dto";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -15,16 +15,22 @@ export class EmployeeController {
 	@Get()
 	@UseGuards(CheckerGuard)
 	@Render('employees/index')
-	async getIndex() {
-		const employees = await this.employeeService.getAll()
-		return { employees }
+	async getIndex(
+		@Query('name') name: string | undefined
+	) {
+		const employees = name
+			? await this.employeeService.findByName(name)
+			: await this.employeeService.getAll()
+		return { employees, name }
 	}
 
 	@Get('new')
 	@UseGuards(CheckerGuard)
 	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/new')
-	async getNewForm() { }
+	async getNewForm() {
+		return { startWorkTime: '08:00', endWorkTime: '17:00' }
+	}
 
 	@Get(':id')
 	@Render('employees/show')
@@ -37,7 +43,9 @@ export class EmployeeController {
 	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/edit')
 	async getEditForm(@Param('id', ParseUUIDPipe) id: UUID) {
-		return { employee: await this.employeeService.findOne(id) }
+		const employee = await this.employeeService.findOne(id)
+		console.log(employee)
+		return { employee }
 	}
 
 	@Get('editpasswd/:id')
@@ -53,7 +61,7 @@ export class EmployeeController {
 		@Req() req,
 		@Res() res: Response,
 		@Param('id', ParseUUIDPipe) id: UUID,
-		@Body() body: ChangePassWDDTO
+		@Body() body: ChangePasswordDTO
 		// @Body('passwordOld') oldP: string,
 		// @Body('password') newP: string,
 	) {

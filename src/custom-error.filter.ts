@@ -5,6 +5,11 @@ import { WrongCredentialException } from "./auth/wrong-credential.exception";
 import { ValidationError } from "class-validator";
 import { ValidationException } from "./validation.exception";
 import { FlashError } from "./flash-error";
+import path from "node:path";
+import fs from "node:fs"
+
+const LOGFILE_PATH = path.join(__dirname, '..', 'errors.log')
+const log = fs.createWriteStream(LOGFILE_PATH, { autoClose: true, flags: 'a' })
 
 @Catch()
 export class CustomErrorFilter implements ExceptionFilter {
@@ -16,18 +21,24 @@ export class CustomErrorFilter implements ExceptionFilter {
 
 		// TODO: breaks to multiple filters
 		if (exception instanceof NotAuthenticatedException) {
+			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
+			log.write(msg)
 			request.flash('error', 'Đăng nhập để sử dụng hệ thống')
 			response.redirect('/login')
 			return
 		}
 
 		if (exception instanceof WrongCredentialException) {
+			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
+			log.write(msg)
 			request.flash('error', 'Sai hoặc không tồn tại thông tin đăng nhập')
 			response.redirect('/login')
 			return
 		}
 
 		if (exception instanceof FlashError) {
+			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
+			log.write(msg)
 			request.flash('error', exception.message)
 			const redirectUrl = request?.session?.returnTo
 			if (redirectUrl) {
@@ -51,6 +62,8 @@ export class CustomErrorFilter implements ExceptionFilter {
 					}
 				}
 			}
+			const log_msg = `${new Date().toISOString()} ValidationExceptions: ${msg}\n`
+			log.write(log_msg)
 
 			request.flash('error', msg)
 			const redirectUrl = request?.session?.returnTo
@@ -61,14 +74,16 @@ export class CustomErrorFilter implements ExceptionFilter {
 			return response.redirect('/records')
 		}
 
+		// Default handler
 		const r = exception.response;
 		if (r && r.message && Array.isArray(r.message)) {
 			exception.message = r.message
 		}
-		// default error handler
 		if (exception.status === null) {
 			exception.status = 500;
 		}
+		const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
+		log.write(msg)
 		response.render('error', { err: exception })
 	}
 }

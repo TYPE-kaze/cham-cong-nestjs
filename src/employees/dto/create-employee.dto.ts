@@ -1,9 +1,10 @@
-import { IsEmail, IsNotEmpty, IsNotIn, IsOptional, IsPhoneNumber, isPhoneNumber, IsString, Matches, ValidateIf } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNotIn, IsOptional, IsPhoneNumber, IsString, Matches, ValidateIf } from "class-validator";
+const vnName = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềếềểẾỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỳỵỷỹýÝ\s]+$/;
 
 export class CreateEmployeeDTO {
 	@IsNotEmpty()
 	@IsString()
-	@Matches(/^[^0-9]+$/) //TODO: whitelist rather than blacklist
+	@Matches(vnName, { message: "Tên chứa kí tự đặc biệt hoặc không hợp lệ" })
 	name: string;
 
 	@IsNotEmpty()
@@ -22,4 +23,16 @@ export class CreateEmployeeDTO {
 	@IsPhoneNumber("VN")
 	phone?: string;
 
+	@IsString()
+	@Matches(/^([01]?[0-9]|2[0-3]):([0-5]?[0-9])(:([0-5]?[0-9]))?$/, {
+		message: 'Time must be in the format HH:mm:ss',
+	})
+	startWorkTime: string;
+
+
+	@IsString()
+	@Matches(/^([01]?[0-9]|2[0-3]):([0-5]?[0-9])(:([0-5]?[0-9]))?$/, {
+		message: 'Time must be in the format HH:mm:ss',
+	})
+	endWorkTime: string;
 }

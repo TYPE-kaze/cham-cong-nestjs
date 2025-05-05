@@ -24,6 +24,16 @@
 						<input class="form-control" type="email" id="email" name="email" placeholder="VD: tên@vídụ.com" required value="<%=employee.dataValues.email%>">
 					</div>
 				</div>
+				<div class="row mb-3">
+					<div class="col-6">
+						<label for="startWorkTime" class="form-label">Giờ làm việc</label>
+						<input value="<%=employee.startWorkTime%>" class="form-control" type="time" name="startWorkTime" id="startWorkTime">
+					</div>
+					<div class="col-6">
+						<label for="endWorkTime" class="form-label">Giờ tan làm</label>
+						<input value="<%=employee.endWorkTime%>" class="form-control" type="time" name="endWorkTime" id="endWorkTime">
+					</div>
+				</div>
 				<div class="mb-3">
 					<button class="btn btn-success" type="submit">Sửa</button>
 				</div>

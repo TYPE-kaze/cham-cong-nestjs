@@ -1,4 +1,4 @@
-<form action="/records/multi-check" method="GET" class="mb-3">
+<form action="/records/day" method="GET" class="mb-3">
 	<div class="row g-2">
 		<div class="col">
 			<label for="search-date" class="form-label">Ngày</label>
@@ -9,16 +9,26 @@
 			<input value="<%=employeeName%>" type="text" name="employeeName" id="search-employeeName" class="form-control" placeholder="VD: Văn A">
 		</div>
 		<div class="col">
-			<label for="search-filter" class="form-label">Tiêu chí</label>
+			<label for="search-filter" class="form-label">Trạng thái</label>
 			<select class="form-select" id="search-filter" name="filter">
 				<option <%= ( filter === '' || filter === undefined ) ? 'selected' : '' %> value="">Tất cả</option>
 				<option <%= filter === '1' ? 'selected' : '' %> value="1">Chưa đến</option>
 				<option <%= filter === '2' ? 'selected' : '' %> value="2">Đã đến</option>
 			</select>
 		</div>
+		<div class="col">
+			<label for="search-filter-2" class="form-label">Tiêu chí</label>
+			<select class="form-select" id="search-filter-2" name="filter2">
+				<option <%= ( filter2 === '' || filter2 === undefined ) ? 'selected' : '' %> value="">Tất cả</option>
+				<option value="1" <%= filter2 === '1' ? 'selected' : ''%>>Đi muộn</option>
+				<option value="2" <%= filter2 === '2' ? 'selected' : ''%>>Về sớm</option>
+				<option value="3" <%= filter2 === '3' ? 'selected' : ''%>>Đi muộn và Về sớm</option>
+				<option value="4" <%= filter2 === '4' ? 'selected' : ''%>>Đi muộn hoặc Về sớm</option>
+			</select>
+		</div>
 		<div class="col-12">
 			<button class="btn btn-primary" type="submit">Lọc</button>
-			<a class="btn btn-secondary" href="/records/multi-check">Reset</a>
+			<a class="btn btn-secondary" href="/records/day">Đặt lại</a>
 		</div>
 	</div>
 </form>

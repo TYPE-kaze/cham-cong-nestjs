@@ -37,8 +37,20 @@ export class EmployeeService {
 	}
 
 	async createOne(createEmployeeDTO: CreateEmployeeDTO) {
-		const { name, email, phone } = createEmployeeDTO
-		const employee = new Employee({ name, email, phone })
+		const { name, email, phone, startWorkTime, endWorkTime } = createEmployeeDTO
+		const employee = new Employee({ name, email, phone, startWorkTime, endWorkTime })
+		return await employee.save()
+	}
+
+	async findOrCreateOneByName(name: string, email?: string, startWorkTime?: string, endWorkTime?: string) {
+		const [employee, _] = await this.employeeModel.findOrCreate({
+			where: {
+				name,
+				email: email ? email : name.trim().replace(/\s/g, '_') + '@mail.com',
+				startWorkTime: startWorkTime ? startWorkTime : '08:00:00',
+				endWorkTime: endWorkTime ? endWorkTime : '17:00:00',
+			}
+		})
 		return await employee.save()
 	}
 
@@ -93,17 +105,14 @@ export class EmployeeService {
 		if (employee === null) {
 			throw new Error('id match no employee')
 		}
-
-
 		if (oldP === 'user' && oldP !== employee.dataValues.password) { //default password 'user'
 			throw new Error('Mật khẩu cũ không đúng')
 		}
-
 		if (oldP !== 'user' && !bcrypt.compareSync(oldP, employee.dataValues.password)) {
 			throw new Error('Mật khẩu cũ không đúng')
 		}
-
 		const hash = bcrypt.hashSync(newP, 10);
+
 		await employee.update({ password: hash })
 	}
 }

@@ -11,6 +11,7 @@
 				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
 					<h1>Danh sách nhân viên</h1>
 				</div>
+				<%- include('index-search', { name }); %>
 				<div class="table-responsive small">
 					<table class="table table-bordered table-hover table-striped">
 						<thead>
@@ -19,39 +20,14 @@
 								<th scope="col">Tên</th>
 								<th scope="col">Email</th>
 								<th scope="col">SĐT</th>
-								<th scope="col" style="width:100px;"></th>
+								<th scope="col">Giờ đi làm</th>
+								<th scope="col">Giờ tan làm</th>
+								<th scope="col" style="width:100px;">Thao tác</th>
 							</tr>
 						</thead>
 						<tbody>
 							<% for (let i=0; i < employees.length; i++) { %>
-							<tr>
-								<td>
-									<%=i%>
-								</td>
-								<td>
-									<a href="/employees/<%=employees[i].dataValues.id%>">
-										<%=employees[i].dataValues.name%>
-									</a>
-								</td>
-								<td>
-									<%=employees[i].dataValues.email%>
-								</td>
-								<td>
-									<%=employees[i].dataValues.phone%>
-								</td>
-								<td class="text-center">
-									<form action="/employees/<%=employees[i].dataValues.id%>?_method=DELETE" method="post">
-										<div class="btn-group" role="group">
-											<a type="button" class="btn btn-success" href="/employees/edit/<%=employees[i].dataValues.id%>">
-												<i class="bi bi-pencil-square"></i>
-											</a>
-											<button type="submit" class="btn btn-danger">
-												<i class="bi bi-person-dash"></i>
-											</button>
-										</div>
-									</form>
-								</td>
-							</tr>
+							<%- include('index-row', { i, e: employees[i] }); %>
 							<% } %>
 						</tbody>
 					</table>

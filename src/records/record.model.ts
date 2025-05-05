@@ -25,7 +25,6 @@ export class Record extends Model {
 	})
 	startTime: string;
 
-
 	@Column({
 		type: DataType.TIME,
 		allowNull: true,
@@ -44,4 +43,9 @@ export class Record extends Model {
 	})
 	isLeaveEarly: boolean
 
+	@Column({
+		type: DataType.STRING,
+		allowNull: true
+	})
+	reason: string
 }

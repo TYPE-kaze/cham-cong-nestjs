@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head', { title: 'Chấm công linh hoạt' }); %>
+<%- include('../partials/head', { title: 'Chấm công' }); %>
 
 <body>
 	<%- include('../partials/navbar'); %>
@@ -21,7 +21,7 @@
 				</div>
 
 				<h2 class="pb-2 border-bottom">Chấm công</h2>
-				<%- include("search-toolbar", { date, employeeName, filter }) %>
+				<%- include("search-toolbar", { date, employeeName, filter, filter2 }) %>
 				<div class="table-responsive small">
 					<table class="table table-bordered table-hover">
 						<thead>
@@ -32,13 +32,14 @@
 								<th scope="col">Thời điểm về</th>
 								<th scope="col">Đi muộn</th>
 								<th scope="col">Về sớm</th>
+								<th scope="col">Giải trình</th>
 								<th scope="col" style="width: 100px;">Thao tác</th>
 							</tr>
 						</thead>
 						<tbody>
 							<% for (let i = 0; i < records.length; i++) { %>
 							<% const r = records[i]; const e = r.employee%>
-							<%- include("multi-check-row", { i, r, e }) %>
+							<%- include("day-row", { i, r, e, isToday }) %>
 							<% } %>
 						</tbody>
 					</table>

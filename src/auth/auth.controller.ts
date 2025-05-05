@@ -11,7 +11,7 @@ export class AuthController {
 	onSucessAuth(@Req() req, @Res() res: Response) {
 		req.flash('success', 'Đăng nhập thành công')
 		if (req?.user?.role === 'checker') {
-			return res.redirect('/records/multi-check')
+			return res.redirect('/records/day')
 		}
 		else if (req?.user?.role === 'employee') {
 			return res.redirect(`/employees/${req.user.user.id}`)
