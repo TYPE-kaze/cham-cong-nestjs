@@ -11,7 +11,7 @@
 		<div class="col">
 			<label for="search-filter" class="form-label">Trạng thái</label>
 			<select class="form-select" id="search-filter" name="filter">
-				<option <%= ( filter === '' || filter === undefined ) ? 'selected' : '' %> value="">Tất cả</option>
+				<option <%= ( filter === '' || !filter ) ? 'selected' : '' %> value="">Tất cả</option>
 				<option <%= filter === '1' ? 'selected' : '' %> value="1">Chưa đến</option>
 				<option <%= filter === '2' ? 'selected' : '' %> value="2">Đã đến</option>
 			</select>
@@ -19,7 +19,7 @@
 		<div class="col">
 			<label for="search-filter-2" class="form-label">Tiêu chí</label>
 			<select class="form-select" id="search-filter-2" name="filter2">
-				<option <%= ( filter2 === '' || filter2 === undefined ) ? 'selected' : '' %> value="">Tất cả</option>
+				<option <%= ( filter2 === '' || !filter2 ) ? 'selected' : '' %> value="">Tất cả</option>
 				<option value="1" <%= filter2 === '1' ? 'selected' : ''%>>Đi muộn</option>
 				<option value="2" <%= filter2 === '2' ? 'selected' : ''%>>Về sớm</option>
 				<option value="3" <%= filter2 === '3' ? 'selected' : ''%>>Đi muộn và Về sớm</option>

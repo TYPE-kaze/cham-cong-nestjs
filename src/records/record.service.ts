@@ -10,6 +10,8 @@ import { FlashError } from "src/flash-error";
 import { CreateRecordDTO } from "./dto/create-record.dto";
 import { DeleteRecordDTO } from "./dto/delete-record.dto";
 import xlsx from 'xlsx'
+import { UpdateReasonDTO } from "./dto/update-reason.dto";
+import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 const { read, utils } = xlsx
 const { decode_range, encode_cell } = utils
 
@@ -20,6 +22,24 @@ export class RecordService {
 		private worktimeRuleService: WorktimeRuleService,
 		@InjectModel(Record) private readonly recordModel: typeof Record
 	) { }
+
+	async createOneReason(createOneReasonDTO: CreateOneReasonDTO) {
+		const { employeeID, reason, date } = createOneReasonDTO
+		const record = await this.recordModel.create({ employeeID, reason, date })
+		return record
+	}
+
+	async updateOneReason(employeeID: UUID, date: string, reasonDTO: UpdateReasonDTO) {
+		const record = await this.recordModel.findOne({
+			where: {
+				employeeID,
+				date
+			}
+		})
+		if (!record) throw Error('find no record')
+
+		return await record.update({ reason: reasonDTO.reason })
+	}
 
 	async XLXSToDatabase(file: Express.Multer.File, year: number) {
 		const workbook = read(file.buffer)

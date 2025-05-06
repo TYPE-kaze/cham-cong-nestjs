@@ -23,13 +23,13 @@ export class Record extends Model {
 		type: DataType.TIME,
 		allowNull: true,
 	})
-	startTime: string;
+	startTime?: string;
 
 	@Column({
 		type: DataType.TIME,
 		allowNull: true,
 	})
-	endTime: string;
+	endTime?: string;
 
 	@Column({
 		type: DataType.BOOLEAN,

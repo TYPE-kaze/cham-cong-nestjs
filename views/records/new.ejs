@@ -8,38 +8,11 @@
 		<%- include("../partials/flash") %>
 		<h1 class="text-center">Nhập thông tin chấm công</h1>
 		<div class="col-6 offset-3">
-			<form class="needs-validation" action="/records" method="POST" novalidate>
-				<div class="mb-3">
-					<label class="form-label" for="employeeID">Nhân viên</label>
-					<select class="form-select" id="employeeID" name="employeeID">
-						<% for( let i = 0; i < employees.length; i++ ) { %>
-						<% const e = employees[i].dataValues %>
-						<option <%= employeeID === e.id ? 'selected' : '' %> value="<%=e.id%>"><%=e.name%></option>
-						<% } %>
-					</select>
-				</div>
-				<div class="mb-3">
-					<label class="form-label" for="date">Ngày</label>
-					<input class="form-control" type="date" id="date" name="date" required value="<%=date%>">
-				</div>
-				<div class="mb-3 row">
-					<div class="col-6">
-						<label class="form-label" for="time">Thời điểm đến</label>
-						<input class="form-control" type="time" id="startTime" name="startTime" required value="<%=time%>">
-					</div>
-					<div class="col-6">
-						<label class="form-label" for="time">Thời điểm về</label>
-						<input class="form-control" type="time" id="endTime" name="endTime" required value="">
-					</div>
-				</div>
-				<div class="mb-3">
-					<label for="reason" class="form-label">Giải trình</label>
-					<textarea class="form-control" name="reason" id="reason" rows="4"></textarea>
-				</div>
-				<div class="mb-3">
-					<button class="btn btn-success" type="submit">Chấm công</button>
-				</div>
-			</form>
+			<% if (isChecker) { %>
+			<%- include('new-checker-form', { employees, date, employeeID }) %>
+			<% } else { %>
+			<%- include('new-employee-form', { employees, date, employeeID }) %>
+			<% } %>
 		</div>
 	</main>
 </body>

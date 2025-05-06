@@ -23,6 +23,17 @@ $(document).ready(function () {
 		// format: 'mm',
 		// viewMode: 'months',
 		// minViewMode: 'months',
-		language: 'vi'
+		language: 'vi',
+		endDate: new Date()
+	});
+
+	$(".year-picker").datepicker({
+		format: "yyyy",
+		viewMode: "years",
+		startView: "years",
+		minViewMode: "years",
+		language: 'vi',
+		endDate: new Date(),
+		startDate: new Date(2000, 0, 1)
 	});
 });

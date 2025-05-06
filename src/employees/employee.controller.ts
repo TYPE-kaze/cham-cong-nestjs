@@ -7,6 +7,7 @@ import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
 import { ChangePasswordDTO } from "./dto/change-passwd.dto";
+import { renderYearCalendar } from "src/employees/getYearCalendar";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -29,13 +30,27 @@ export class EmployeeController {
 	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/new')
 	async getNewForm() {
-		return { startWorkTime: '08:00', endWorkTime: '17:00' }
+		return { startWorkTime: '08:30', endWorkTime: '17:30' }
 	}
 
 	@Get(':id')
+	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/show')
-	async showOne(@Param('id', ParseUUIDPipe) id: UUID) {
-		return { employee: (await this.employeeService.getOneWithRecords(id)) }
+	async showOne(
+		@Param('id', ParseUUIDPipe) id: UUID,
+		@Query('year') year?: string,
+	) {
+		const currentYear = new Date().getFullYear()
+		let yearNum = currentYear
+		if (year && year !== '') {
+			yearNum = parseInt(year)
+		}
+		if (yearNum > currentYear || yearNum < 2000) {
+			throw new Error('year is from future')
+		}
+		const employee = await this.employeeService.getOneWithRecords(id, yearNum)
+		const calendar = renderYearCalendar(yearNum, employee.records, id)
+		return { employee, calendar, year: yearNum, id, currentYear }
 	}
 
 	@Get('edit/:id')
@@ -57,7 +72,7 @@ export class EmployeeController {
 	}
 
 	@Put(':id/password')
-	async employeeChangePassWD(
+	async employeeChangePassword(
 		@Req() req,
 		@Res() res: Response,
 		@Param('id', ParseUUIDPipe) id: UUID,

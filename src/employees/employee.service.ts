@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Employee } from "./employee.model";
 import { CreateEmployeeDTO } from "./dto/create-employee.dto";
 import { UUID } from "node:crypto";
-import { Op } from "sequelize";
+import { literal, Op } from "sequelize";
 import { Record } from "src/records/record.model";
 
 @Injectable()
@@ -47,8 +47,8 @@ export class EmployeeService {
 			where: {
 				name,
 				email: email ? email : name.trim().replace(/\s/g, '_') + '@mail.com',
-				startWorkTime: startWorkTime ? startWorkTime : '08:00:00',
-				endWorkTime: endWorkTime ? endWorkTime : '17:00:00',
+				startWorkTime: startWorkTime ? startWorkTime : '08:30:00',
+				endWorkTime: endWorkTime ? endWorkTime : '17:30:00',
 			}
 		})
 		return await employee.save()
@@ -74,8 +74,20 @@ export class EmployeeService {
 		return employee
 	}
 
-	async getOneWithRecords(id: UUID) {
-		const employee = await this.employeeModel.findOne({ where: { id }, include: [Record] })
+	async getOneWithRecords(id: UUID, recordYear: number) {
+		const employee = await this.employeeModel.findOne(
+			{
+				where: { id },
+				include: [{
+					model: Record,
+					required: false,
+					where: {
+						[Op.and]: literal(`YEAR(date) = ${recordYear}`)
+					},
+					order: [['date', 'ASC']],
+				}]
+			}
+		)
 		if (employee === null) {
 			throw new Error('id matches no employee')
 		}

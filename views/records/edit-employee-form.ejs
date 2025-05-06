@@ -1,0 +1,27 @@
+<form action="/records/reason?employeeID=<%=employeeID%>&date=<%=date%>&_method=PUT" method="POST" novalidate>
+	<!-- <input class="form-control" type="hidden" name="employeeID" value="<%=employeeID%>">
+	<input class="form-control" type="hidden" name="date" required value="<%=date%>"> -->
+	<div class="mb-3">
+		<label for="">Nhân viên</label>
+		<input disabled value="<%=name%>" type="text" class="form-control">
+	</div>
+	<div class="mb-3">
+		<label for="">Ngày</label>
+		<input disabled value="<%=date%>" type="date" class="form-control">
+	</div>
+	<div class="row mb-3">
+		<div class="col-6">
+			<label class="form-label" for="startTime"> Đến lúc </label>
+			<input disabled class="form-control" type="time" id="startTime" value="<%=startTime%>">
+		</div>
+		<div class="col-6">
+			<label class="form-label" for="endTime"> Tan làm lúc </label>
+			<input disabled class="form-control" type="time" id="endTime" value="<%=endTime%>">
+		</div>
+	</div>
+	<div class="mb-3">
+		<label for="reason" class="form-label">Giải trình</label>
+		<textarea class="form-control" name="reason" id="reason" rows="4"><%= reason %></textarea>
+	</div>
+	<button class="btn btn-success" type="submit">Cập nhật</button>
+</form>

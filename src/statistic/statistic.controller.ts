@@ -83,7 +83,7 @@ export class StatisticController {
 		@Query('monthYear') monthYear: string | undefined,
 	) {
 		let month: string, year: string
-		if (monthYear === undefined || monthYear == '') {
+		if (!monthYear || monthYear == '') {
 			const now = new Date()
 			month = String(now.getMonth() + 1)
 			year = String(now.getFullYear())
@@ -106,11 +106,11 @@ export class StatisticController {
 		@Res() res
 	) {
 		const now = new Date()
-		if (month === undefined || month == '') {
+		if (!month || month == '') {
 			month = String(now.getMonth() + 1)
 		}
 
-		if (year === undefined || year == '') {
+		if (!year || year == '') {
 			year = String(now.getFullYear())
 		}
 

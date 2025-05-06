@@ -8,22 +8,43 @@ import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
 import { UUID } from "crypto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { FileValidationPipe } from "./file-validator.pipe";
+import { FileValidationPipe } from "./excel-validator.pipe";
+import { FlashError } from "src/flash-error";
+import { UpdateReasonDTO } from "./dto/update-reason.dto";
+import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 
 @Controller('records')
-@UseGuards(AuthenticatedGuard, CheckerGuard)
 export class RecordController {
 	constructor(
 		private recordService: RecordService,
 		private employeeService: EmployeeService
 	) { }
 
+	@Post('reason')
+	@UseGuards(AuthenticatedGuard)
+	async createOneReason(
+		@Body() createReasonDTO: CreateOneReasonDTO,
+		@Res() res,
+		@Req() req
+	) {
+
+		await this.recordService.createOneReason(createReasonDTO)
+		req.flash('success', `Tạo giải trinh thành công`)
+		const redirectUrl = req?.session?.returnTo
+		if (redirectUrl) {
+			return res.redirect(redirectUrl)
+		}
+		return res.redirect(`/employees/${createReasonDTO.employeeID}`)
+	}
+
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Get('all')
 	async getAll() {
 		const records = await this.recordService.getAll()
 		return records
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Get('import')
 	@Render('records/import')
 	@UseInterceptors(StoreReturnToInterceptor)
@@ -31,6 +52,7 @@ export class RecordController {
 		return { currentYear: new Date().getFullYear() }
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Post('import')
 	@UseInterceptors(FileInterceptor('formFile'))
 	@Redirect('/records/day')
@@ -43,6 +65,7 @@ export class RecordController {
 		req.flash('success', `Nhập mới ${addedCount}, cập nhật ${updatedCount} chấm công từ file ${file.originalname}`)
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Post('checkout')
 	async checkoutEmployeeNow(
 		@Query('employeeID', ParseUUIDPipe) employeeID: UUID,
@@ -60,6 +83,7 @@ export class RecordController {
 		return res.redirect('/records/day')
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Post('checkin')
 	async checkinEmployeeNow(
 		@Query('employeeID', ParseUUIDPipe) employeeID: UUID,
@@ -78,6 +102,7 @@ export class RecordController {
 	}
 
 	@Get('day')
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('records/day')
 	async getChamCongPage(
@@ -179,6 +204,7 @@ export class RecordController {
 	}
 
 	@Get()
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Render('records/index')
 	async getIndex(
 		@Query('employeeID') employeeID: string,
@@ -217,50 +243,44 @@ export class RecordController {
 		}
 	}
 
+	@UseGuards(AuthenticatedGuard)
 	@Get('new')
 	@Render('records/new')
 	// @UseInterceptors(StoreReturnToInterceptor)
 	async getNewForm(
 		@Query('date') date: string | undefined,
-		@Query('employeeID') employeeID: string | undefined
+		@Query('employeeID') employeeID: string | undefined,
+		@Req() req
 	) {
-		const now = new Date();
-
-		const year = now.getFullYear();
-		const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-		const day = String(now.getDate()).padStart(2, '0');
-		if (!date || date === '') {
-			date = `${year}-${month}-${day}`;
-		}
-
-		const hours = String(now.getHours()).padStart(2, '0');
-		const minutes = String(now.getMinutes()).padStart(2, '0');
-		const seconds = String(now.getSeconds()).padStart(2, '0');
-		const time = `${hours}:${minutes}:${seconds}`;
-
+		const isChecker = req.user.role === 'checker'
 		const employees = await this.employeeService.getAll()
-
-		return { date, time, employees, employeeID }
+		return { date, employees, employeeID, isChecker }
 	}
 
+	@UseGuards(AuthenticatedGuard)
 	@Get('edit')
 	// @UseInterceptors(StoreReturnToInterceptor)
 	@Render('records/edit')
-	async getEditForm(@Query() getEditFormDTO) {
+	async getEditForm(
+		@Query() getEditFormDTO,
+		@Req() req
+	) {
 		const date = getEditFormDTO.date
 		const employeeID = getEditFormDTO.employeeID
 		const record = await this.recordService.findOne(date, employeeID)
 		const { startTime, endTime, reason } = record.dataValues
-		return { reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
+		const isChecker = req.user.role === 'checker'
+		return { isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
 	}
 
 	@Post()
+	@UseGuards(AuthenticatedGuard)
 	async createRecord(
 		@Req() req,
 		@Res() res,
 		@Body() createRecordDTO: CreateRecordDTO,
 	) {
-		const record = await this.recordService.createOne(createRecordDTO)
+		await this.recordService.createOne(createRecordDTO)
 		req.flash('success', `Chấm công thành công`)
 		const redirectUrl = req?.session?.returnTo
 		if (redirectUrl) {
@@ -269,6 +289,7 @@ export class RecordController {
 		return res.redirect('/records/day')
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Delete()
 	async deleteRecord(
 		@Req() req,
@@ -284,15 +305,38 @@ export class RecordController {
 		return res.redirect('/records/day')
 	}
 
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Put()
 	async updateRecord(
 		@Req() req,
 		@Res() res,
 		@Body() updateRecordDTO: CreateRecordDTO
 	) {
-		console.log(updateRecordDTO)
-		const record = await this.recordService.updateOne(updateRecordDTO)
+		await this.recordService.updateOne(updateRecordDTO)
 		req.flash('success', `Cập nhật chấm công thành công`)
+		const redirectUrl = req?.session?.returnTo
+		if (redirectUrl) {
+			return res.redirect(redirectUrl)
+		}
+		return res.redirect('/records/day')
+	}
+
+	@UseGuards(AuthenticatedGuard)
+	@Put('reason')
+	async updateReasonOfRecord(
+		@Req() req,
+		@Res() res,
+		@Query('employeeID', ParseUUIDPipe) employeeID: UUID,
+		@Query('date') date: string | undefined,
+		@Body() updateReasonDTO: UpdateReasonDTO
+	) {
+
+		if (!date || date === '' || ! /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+			throw new FlashError('date is not valid')
+		}
+		await this.recordService.updateOneReason(employeeID, date, updateReasonDTO)
+
+		req.flash('success', `Cập nhật giải trình thành công`)
 		const redirectUrl = req?.session?.returnTo
 		if (redirectUrl) {
 			return res.redirect(redirectUrl)
