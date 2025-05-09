@@ -1,6 +1,7 @@
 import { Column, Model, Table, HasMany, PrimaryKey, DataType, NotEmpty, NotIn } from 'sequelize-typescript';
 import { randomUUID, UUID } from 'node:crypto';
 import { Record } from 'src/records/record.model';
+import { MonthStat } from 'src/statistic/month-stat.model';
 
 @Table({ tableName: 'employees' })
 export class Employee extends Model {
@@ -26,6 +27,9 @@ export class Employee extends Model {
 
 	@HasMany(() => Record)
 	records: Record[]
+
+	@HasMany(() => MonthStat, { onDelete: 'CASCADE' })
+	monthStats: MonthStat[]
 
 	@Column({
 		type: DataType.TIME,

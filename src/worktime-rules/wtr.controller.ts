@@ -3,7 +3,7 @@ import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { WorktimeRuleService } from "./wtr.service";
 import { NewWorktimeRuleDTO } from "./dto/new-worktime-rule.dto";
-import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
+// import { StoreReturnToInterceptor } from "src/cur-returnto.interceptor";
 
 @Controller('worktime-rules')
 @UseGuards(AuthenticatedGuard, CheckerGuard)
@@ -43,7 +43,7 @@ export class WorktimeRuleController {
 	}
 
 	@Get('new')
-	@UseInterceptors(StoreReturnToInterceptor)
+	// @UseInterceptors(StoreReturnToInterceptor)
 	@Render('worktime-rules/new')
 	getNewForm() { }
 }

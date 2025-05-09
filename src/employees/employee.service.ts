@@ -6,6 +6,7 @@ import { CreateEmployeeDTO } from "./dto/create-employee.dto";
 import { UUID } from "node:crypto";
 import { literal, Op } from "sequelize";
 import { Record } from "src/records/record.model";
+import { FlashError } from 'src/flash-error';
 
 @Injectable()
 export class EmployeeService {
@@ -112,16 +113,16 @@ export class EmployeeService {
 		return await employee.destroy()
 	}
 
-	async changePassWD(id: UUID, oldP: string, newP: string) {
+	async changePassword(id: UUID, oldP: string, newP: string) {
 		const employee = await this.employeeModel.findOne({ where: { id } })
 		if (employee === null) {
-			throw new Error('id match no employee')
+			throw new FlashError('id match no employee')
 		}
 		if (oldP === 'user' && oldP !== employee.dataValues.password) { //default password 'user'
-			throw new Error('Mật khẩu cũ không đúng')
+			throw new FlashError('Mật khẩu cũ không đúng')
 		}
 		if (oldP !== 'user' && !bcrypt.compareSync(oldP, employee.dataValues.password)) {
-			throw new Error('Mật khẩu cũ không đúng')
+			throw new FlashError('Mật khẩu cũ không đúng')
 		}
 		const hash = bcrypt.hashSync(newP, 10);
 

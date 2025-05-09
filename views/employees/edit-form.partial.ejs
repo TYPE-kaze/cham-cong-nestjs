@@ -1,0 +1,52 @@
+<!-- Modal -->
+<div class="modal" id="confirm-delete" tabindex="-1" aria-labelledby="confirm-delete" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header text-bg-danger">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Xác nhận xóa nhân viên</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Nhấn xác nhận để xóa nhân viên
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Quay lại</button>
+				<!-- <button type="button" class="btn btn-primary">Xóa</button> -->
+				<a class="btn btn-danger" href="/employees/<%=employee.id%>?_method=DELETE">Xác nhận</a>
+			</div>
+		</div>
+	</div>
+</div>
+<form class="needs-validation" action="/employees/<%=employee.dataValues.id%>?_method=PUT" method="POST" novalidate>
+	<div class="mb-3">
+		<label class="form-label" for="name">Họ và tên</label>
+		<input class="form-control" type="text" id="name" name="name" placeholder="VD: Nguyễn Văn A" required value="<%=employee.dataValues.name%>">
+	</div>
+	<div class="mb-3">
+		<label class="form-label" for="phone">Số điện thoại</label>
+		<input class="form-control" type="text" id="phone" name="phone" required value="<%=employee.dataValues.phone%>">
+	</div>
+	<div class="mb-3">
+		<label class="form-label" for="email">Địa chỉ Email</label>
+		<div class="input-group">
+			<span class="input-group-text">@</span>
+			<input class="form-control" type="email" id="email" name="email" placeholder="VD: tên@vídụ.com" required value="<%=employee.dataValues.email%>">
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-6">
+			<label for="startWorkTime" class="form-label">Giờ làm việc</label>
+			<input value="<%=employee.startWorkTime.slice(0, employee.startWorkTime.length - 3)%>" class="form-control" type="time" name="startWorkTime" id="startWorkTime">
+		</div>
+		<div class="col-6">
+			<label for="endWorkTime" class="form-label">Giờ tan làm</label>
+			<input value="<%=employee.endWorkTime.slice(0, employee.endWorkTime.length - 3)%>" class="form-control" type="time" name="endWorkTime" id="endWorkTime">
+		</div>
+	</div>
+	<button class="btn btn-success" type="submit">Sửa</button>
+	<a class="btn btn-secondary" href="<%=returnTo%>">Quay lại</a>
+	<!-- Button trigger modal -->
+	<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete">
+		Xóa
+	</button>
+</form>

@@ -15,19 +15,17 @@
 	<div class="mb-3 row">
 		<div class="col-6">
 			<label class="form-label" for="time">Thời điểm đến</label>
-			<input class="form-control" type="time" id="startTime" name="startTime" required value="00:00:00">
+			<input class="form-control" type="time" id="startTime" name="startTime" required>
 		</div>
 		<div class="col-6">
 			<label class="form-label" for="time">Thời điểm về</label>
-			<input class="form-control" type="time" id="endTime" name="endTime" required value="00:00:00">
+			<input class="form-control" type="time" id="endTime" name="endTime" required>
 		</div>
 	</div>
 	<div class="mb-3">
 		<label for="reason" class="form-label">Giải trình</label>
 		<textarea class="form-control" name="reason" id="reason" rows="4"></textarea>
 	</div>
-	<div class="mb-3">
-		<button class="btn btn-success" type="submit">Chấm công</button>
-	</div>
+	<button class="btn btn-success" type="submit">Chấm công</button>
+	<a class="btn btn-secondary" href="<%=returnTo%>">Quay lại</a>
 </form>
-</div>

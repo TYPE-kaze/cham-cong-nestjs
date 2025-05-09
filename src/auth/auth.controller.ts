@@ -10,13 +10,15 @@ export class AuthController {
 	@UseGuards(LocalAuthGuard)
 	onSucessAuth(@Req() req, @Res() res: Response) {
 		req.flash('success', 'Đăng nhập thành công')
+		let defaultRoute
 		if (req?.user?.role === 'checker') {
-			return res.redirect('/records/day')
+			defaultRoute = '/records/day'
 		}
 		else if (req?.user?.role === 'employee') {
-			return res.redirect(`/employees/${req.user.user.id}`)
+			defaultRoute = `/employees/${req.user.user.id}`
 		}
-		throw new Error('Successful logined but with unknown role')
+		console.log(req.session)
+		return res.redirect(req?.session?.returnTo ?? req?.session?.returnToOnError ?? defaultRoute)
 	}
 
 	@Get('login')

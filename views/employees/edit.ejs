@@ -8,36 +8,7 @@
 		<%- include("../partials/flash") %>
 		<h1 class="text-center">Sửa thông tin nhân viên</h1>
 		<div class="lodge-form-container col-6 offset-3">
-			<form class="needs-validation" action="/employees/<%=employee.dataValues.id%>?_method=PUT" method="POST" novalidate>
-				<div class="mb-3">
-					<label class="form-label" for="name">Họ và tên</label>
-					<input class="form-control" type="text" id="name" name="name" placeholder="VD: Nguyễn Văn A" required value="<%=employee.dataValues.name%>">
-				</div>
-				<div class="mb-3">
-					<label class="form-label" for="phone">Số điện thoại</label>
-					<input class="form-control" type="text" id="phone" name="phone" required value="<%=employee.dataValues.phone%>">
-				</div>
-				<div class="mb-3">
-					<label class="form-label" for="email">Địa chỉ Email</label>
-					<div class="input-group">
-						<span class="input-group-text">@</span>
-						<input class="form-control" type="email" id="email" name="email" placeholder="VD: tên@vídụ.com" required value="<%=employee.dataValues.email%>">
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-6">
-						<label for="startWorkTime" class="form-label">Giờ làm việc</label>
-						<input value="<%=employee.startWorkTime%>" class="form-control" type="time" name="startWorkTime" id="startWorkTime">
-					</div>
-					<div class="col-6">
-						<label for="endWorkTime" class="form-label">Giờ tan làm</label>
-						<input value="<%=employee.endWorkTime%>" class="form-control" type="time" name="endWorkTime" id="endWorkTime">
-					</div>
-				</div>
-				<div class="mb-3">
-					<button class="btn btn-success" type="submit">Sửa</button>
-				</div>
-			</form>
+			<%- include('edit-form.partial.ejs', { employee }) %>
 		</div>
 	</main>
 </body>

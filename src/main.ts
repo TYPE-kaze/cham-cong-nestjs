@@ -33,19 +33,22 @@ async function bootstrap() {
 	app.use(passport.initialize())
 	app.use(passport.session())
 
-	app.use((req: Request, res: Response, next) => {
+	app.use((req, res: Response, next) => {
 		//flash from session storage
 		res.locals.success = req.flash('success')
 		res.locals.error = req.flash('error')
 		res.locals.user = req.user
+		res.locals.returnTo = req?.session?.returnTo
 		next()
 	})
 
 	app.use(methodOverride)
-	app.useGlobalPipes(new ValidationPipe({
-		transform: true,
-		exceptionFactory: errors => new ValidationException(errors)
-	}))
+	app.useGlobalPipes(
+		new ValidationPipe({
+			stopAtFirstError: true,
+			transform: true,
+			exceptionFactory: errors => new ValidationException(errors)
+		}))
 	app.useGlobalFilters(new CustomErrorFilter())
 
 	// test

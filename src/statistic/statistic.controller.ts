@@ -4,9 +4,10 @@ import { StatisticService } from "./statistic.service";
 import { EmployeeService } from "src/employees/employee.service";
 import { InjectModel } from "@nestjs/sequelize";
 import { MonthStat } from "./month-stat.model";
-import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
+// import { StoreReturnToInterceptor } from "src/cur-returnto.interceptor";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
+import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
 
 @UseGuards(AuthenticatedGuard, CheckerGuard)
 @Controller('stats')
@@ -116,10 +117,7 @@ export class StatisticController {
 
 		await this.statService.updateMonthStatBaseOnRecord(month, year)
 		req.flash('success', `Cập nhật thống kê tháng ${month} năm ${year}`)
-		const redirectUrl = req?.session?.returnTo
-		if (redirectUrl) {
-			return res.redirect(redirectUrl)
-		}
+		// const redirectUrl = req?.session?.returnTo
 		return res.redirect('/stats/month')
 	}
 }

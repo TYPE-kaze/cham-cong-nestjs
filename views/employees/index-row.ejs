@@ -20,15 +20,8 @@
 		<%= e.endWorkTime %>
 	</td>
 	<td class="text-center">
-		<form action="/employees/<%=e.dataValues.id%>?_method=DELETE" method="post">
-			<div class="btn-group" role="group">
-				<a type="button" class="btn btn-success" href="/employees/edit/<%=e.dataValues.id%>">
-					<i class="bi bi-pencil-square"></i>
-				</a>
-				<button type="submit" class="btn btn-danger">
-					<i class="bi bi-person-dash"></i>
-				</button>
-			</div>
-		</form>
+		<a type="button" class="btn btn-success" href="/employees/edit/<%=e.dataValues.id%>">
+			<i class="bi bi-pencil-square"></i>
+		</a>
 	</td>
 </tr>

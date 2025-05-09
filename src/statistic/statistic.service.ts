@@ -6,6 +6,7 @@ import { Record } from "src/records/record.model";
 import { RecordService } from "src/records/record.service";
 import { WorktimeRuleService } from "src/worktime-rules/wtr.service";
 import { MonthStat } from "./month-stat.model";
+import { UUID } from "node:crypto";
 
 @Injectable()
 export class StatisticService {
@@ -21,6 +22,10 @@ export class StatisticService {
 				include: [Employee]
 			}
 		)
+	}
+
+	async deleteMonthStatOfOneEmployee(employeeID: UUID) {
+		return await this.monthStatModel.destroy({ where: { employeeID } })
 	}
 
 	async updateMonthStatBaseOnRecord(month: string, year: string) {

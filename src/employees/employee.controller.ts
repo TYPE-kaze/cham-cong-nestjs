@@ -5,9 +5,11 @@ import { UUID } from "node:crypto";
 import { Request, Response } from "express";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
-import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
-import { ChangePasswordDTO } from "./dto/change-passwd.dto";
+import { ChangePasswordDTO } from "./dto/change-password.dto";
 import { renderYearCalendar } from "src/employees/getYearCalendar";
+import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
+import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
+import { SameEmployeeGuard } from "src/auth/same-employee.guard";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -15,6 +17,7 @@ export class EmployeeController {
 	constructor(private employeeService: EmployeeService) { }
 	@Get()
 	@UseGuards(CheckerGuard)
+	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/index')
 	async getIndex(
 		@Query('name') name: string | undefined
@@ -27,7 +30,7 @@ export class EmployeeController {
 
 	@Get('new')
 	@UseGuards(CheckerGuard)
-	@UseInterceptors(StoreReturnToInterceptor)
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Render('employees/new')
 	async getNewForm() {
 		return { startWorkTime: '08:30', endWorkTime: '17:30' }
@@ -37,6 +40,7 @@ export class EmployeeController {
 	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('employees/show')
 	async showOne(
+		@Req() req,
 		@Param('id', ParseUUIDPipe) id: UUID,
 		@Query('year') year?: string,
 	) {
@@ -50,104 +54,75 @@ export class EmployeeController {
 		}
 		const employee = await this.employeeService.getOneWithRecords(id, yearNum)
 		const calendar = renderYearCalendar(yearNum, employee.records, id)
-		return { employee, calendar, year: yearNum, id, currentYear }
+		return { returnTo: req.session.returnTo, employee, calendar, year: yearNum, id, currentYear }
 	}
 
 	@Get('edit/:id')
 	@UseGuards(CheckerGuard)
-	@UseInterceptors(StoreReturnToInterceptor)
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Render('employees/edit')
 	async getEditForm(@Param('id', ParseUUIDPipe) id: UUID) {
 		const employee = await this.employeeService.findOne(id)
-		console.log(employee)
 		return { employee }
 	}
 
-	@Get('editpasswd/:id')
-	@UseInterceptors(StoreReturnToInterceptor)
-	@Render('employees/editpasswd')
-	async getEditPassWDForm(@Param('id', ParseUUIDPipe) id: UUID) {
+	@Get('password/:id')
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
+	@Render('employees/edit-password')
+	async getEditPasswordForm(@Param('id', ParseUUIDPipe) id: UUID) {
 		const employee = await this.employeeService.findOne(id)
 		return { employee: { id: employee.dataValues.id } }
 	}
 
 	@Put(':id/password')
+	@UseGuards(AuthenticatedGuard, SameEmployeeGuard)
 	async employeeChangePassword(
 		@Req() req,
 		@Res() res: Response,
 		@Param('id', ParseUUIDPipe) id: UUID,
 		@Body() body: ChangePasswordDTO
-		// @Body('passwordOld') oldP: string,
-		// @Body('password') newP: string,
 	) {
 		const { password, passwordOld } = body
-		try {
-			await this.employeeService.changePassWD(id, passwordOld, password)
-			req.flash('suceess', 'Đổi mật khẩu thành công')
-			return res.redirect(`/employees/${id}`)
-		} catch (error) {
-			req.flash('error', error.message)
-			return res.redirect(req.session.returnTo)
-		}
+		await this.employeeService.changePassword(id, passwordOld, password)
+		req.flash('suceess', 'Đổi mật khẩu thành công')
+		return res.redirect(req?.session?.returnTo ?? `/employees/${id}`)
 	}
 
 	@Post()
-	@UseGuards(CheckerGuard)
-	@Redirect('/employees')
-	async createOne(@Body() createEmployeeDTO: CreateEmployeeDTO, @Req() req: Request) {
-		try {
-			const employee = await this.employeeService.createOne(createEmployeeDTO)
-			req.flash('success', `Thêm nhân viên ${employee.dataValues.name} thành công`)
-		}
-		catch (error) {
-			let msg: string;
-			if (error instanceof Error) {
-				msg = error.message
-			}
-			else {
-				msg = 'Something wrong happen'
-			}
-			req.flash('error', msg)
-		}
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	async createOne(
+		@Body() createEmployeeDTO: CreateEmployeeDTO,
+		@Req() req,
+		@Res() res
+	) {
+		const employee = await this.employeeService.createOne(createEmployeeDTO)
+		req.flash('success', `Thêm nhân viên ${employee.name} thành công`)
+		// return res.redirect(req?.session?.returnTo ?? `/employees/${employee.id}`)
+		return res.redirect(`/employees/${employee.id}`)
 	}
 
 	@Put(':id')
-	@UseGuards(CheckerGuard)
-	@Redirect('/employees')
-	async updateOne(@Param('id', ParseUUIDPipe) id: UUID, @Body() updateEmployeeDTO: CreateEmployeeDTO, @Req() req: Request) {
-		try {
-			const employee = await this.employeeService.updateOne(id, updateEmployeeDTO)
-			req.flash('success', `Sửa thông tin nhân viên ${employee.dataValues.name} thành công`)
-		}
-		catch (error) {
-			let msg: string;
-			if (error instanceof Error) {
-				msg = error.message
-			}
-			else {
-				msg = 'Something wrong happen'
-			}
-			req.flash('error', msg)
-		}
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	async updateOne(
+		@Param('id', ParseUUIDPipe) id: UUID,
+		@Body() updateEmployeeDTO: CreateEmployeeDTO,
+		@Req() req,
+		@Res() res
+	) {
+		const employee = await this.employeeService.updateOne(id, updateEmployeeDTO)
+		req.flash('success', `Sửa thông tin nhân viên ${employee.name} thành công`)
+		return res.redirect(req?.session?.returnTo ?? `/employees/${employee.id}`)
 	}
 
 	@Delete(':id')
-	@UseGuards(CheckerGuard)
-	@Redirect('/employees')
-	async deleteOne(@Param('id', ParseUUIDPipe) id: UUID, @Req() req: Request) {
-		try {
-			await this.employeeService.deleteOne(id)
-			req.flash('success', `Xóa thông tin nhân viên thành công`)
-		}
-		catch (error) {
-			let msg: string;
-			if (error instanceof Error) {
-				msg = error.message
-			}
-			else {
-				msg = 'Something wrong happen'
-			}
-			req.flash('error', msg)
-		}
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	async deleteOne(
+		@Param('id', ParseUUIDPipe) id: UUID,
+		@Req() req,
+		@Res() res
+	) {
+		await this.employeeService.deleteOne(id)
+		req.flash('success', `Xóa nhân viên thành công`)
+		return res.redirect(req?.session?.returnTo ?? `/employees`)
 	}
 }

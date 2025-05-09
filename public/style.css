@@ -9,7 +9,7 @@
 	--teal-700: #147d64;
 	--teal-800: #0c6b58;
 	--teal-900: #014d40;
-  
+
 	--blue-grey-050: #f0f4f8;
 	--blue-grey-100: #d9e2ec;
 	--blue-grey-200: #bcccdc;
@@ -23,38 +23,38 @@
 }
 
 a.disabled {
-    pointer-events: none;
-    color: #ccc;
+	pointer-events: none;
+	color: #ccc;
 }
 
 .month-indicator {
-  /* color: var(--blue-grey-700); */
-  text-align: center;
-  font-weight: 700;
+	/* color: var(--blue-grey-700); */
+	text-align: center;
+	font-weight: 700;
 }
 
 .day-of-week,
 .date-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
 }
 
 .day-of-week {
-  margin-top: 1.25em;
+	margin-top: 1.25em;
 }
 
-.day-of-week > * {
-  font-size: 0.7em;
-  color: var(--blue-grey-400);
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  font-variant: small-caps;
-  text-align: center;
+.day-of-week>* {
+	font-size: 0.7em;
+	color: var(--blue-grey-400);
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	font-variant: small-caps;
+	text-align: center;
 }
 
 /* Dates */
 .date-grid {
-  margin-top: 0.5em;
+	margin-top: 0.5em;
 }
 
 /* Positioning the first day */
@@ -63,26 +63,60 @@ a.disabled {
 } */
 
 .date-grid a {
-  position: relative;
-  border: 0;
-  /* width: 4.5ch; */
-  height: 4.5ch;
-  border-radius: 50%;
-  background-color: transparent;
-  /* color: var(--blue-grey-600); */
-  color: black;
-  text-decoration: none;
+	position: relative;
+	border: 0;
+	/* width: 4.5ch; */
+	height: 4.5ch;
+	border-radius: 50%;
+	background-color: transparent;
+	/* color: var(--blue-grey-600); */
+	color: black;
+	text-decoration: none;
 }
+
+
+.date-grid a.first-day-offset-0 {
+	grid-column: 0;
+}
+
+.date-grid a.first-day.offset-1 {
+	grid-column: 1;
+}
+
+.date-grid a.first-day-offset-2 {
+	grid-column: 2;
+}
+
+.date-grid a.first-day-offset-3 {
+	grid-column: 3;
+}
+
+.date-grid a.first-day-offset-4 {
+	grid-column: 4;
+}
+
+.date-grid a.first-day-offset-5 {
+	grid-column: 5;
+}
+
+.date-grid a.first-day-offset-6 {
+	grid-column: 6;
+}
+
+.date-grid a.first-day-offset-7 {
+	grid-column: 7;
+}
+
 
 .date-grid a:hover,
 .date-grid a:focus {
-  outline: none;
-  background-color: var(--blue-grey-050);
-  color: var(--blue-grey-700);
+	outline: none;
+	background-color: var(--blue-grey-050);
+	color: var(--blue-grey-700);
 }
 
 .date-grid a:active,
 .date-grid a.is-selected {
-  background-color: var(--teal-100);
-  color: var(--teal-900);
+	background-color: var(--teal-100);
+	color: var(--teal-900);
 }

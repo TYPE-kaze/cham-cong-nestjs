@@ -14,15 +14,12 @@ export class FileValidationPipe implements PipeTransform {
 	// }
 	transform(value: any, metadata: ArgumentMetadata) {
 		if (!value) throw new FlashError('Chưa nhập file Excel')
-		if (!(typeof value.originalname === 'string' && value.originalname.endsWith('.xlsx'))) {
-			throw new FlashError('Đuôi file không phải là .xlsx')
-		}
 		if (
-			value.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			!(typeof value.originalname === 'string' && value.originalname.endsWith('.xlsx'))
+			|| value.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 			|| !xlsx.read(value.buffer, { type: 'buffer' }).Workbook
-			// CHECK: cau truc cua bang
 		) {
-			throw new FlashError('Không phải là file Excel')
+			throw new FlashError('File không đúng định dạng')
 		}
 		return value
 	}

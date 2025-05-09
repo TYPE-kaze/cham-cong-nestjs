@@ -1,0 +1,36 @@
+<div class="container history">
+	<% let i = 0; const cellPerRow = 4 %>
+	<% for ( const month of calendar.months ) { %>
+	<% if ( i % cellPerRow === 0) { %>
+	<div class="row mb-3">
+		<% } %>
+		<% const {monthName, monthNo, days, firstDayOffset } = month %>
+		<div class="calendar col-3">
+			<div class="month-indicator">
+				<time datetime="<%=`${calendar.year}-${monthNo}`%>"> <%=`${monthName}`%> </time>
+			</div>
+			<div class="day-of-week">
+				<div>T2</div>
+				<div>T3</div>
+				<div>T4</div>
+				<div>T5</div>
+				<div>T6</div>
+				<div>T7</div>
+				<div>CN</div>
+			</div>
+			<div class="date-grid">
+				<% for (const day of days) { %>
+				<% const { dayNo, dayStr, classStr, recordLink } = day %>
+				<% const firstDayClassStr = dayNo === 1 ? `first-day-offset-${firstDayOffset}` : '' %>
+				<a href="<%=recordLink%>" class="<%=classStr%> <%=firstDayClassStr%> d-flex align-items-center justify-content-center ">
+					<time datetime="<%=dayStr%>"><%=dayNo%></time>
+				</a>
+				<% } %>
+			</div>
+		</div>
+		<% if ( i % cellPerRow === cellPerRow - 1) { %>
+	</div>
+	<% } %>
+	<% i++ %>
+	<% } %>
+</div>

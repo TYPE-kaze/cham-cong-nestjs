@@ -24,8 +24,7 @@ export class CustomErrorFilter implements ExceptionFilter {
 			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
 			log.write(msg)
 			request.flash('error', 'Đăng nhập để sử dụng hệ thống')
-			response.redirect('/login')
-			return
+			return response.redirect('/login')
 		}
 
 		if (exception instanceof WrongCredentialException) {
@@ -40,11 +39,8 @@ export class CustomErrorFilter implements ExceptionFilter {
 			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
 			log.write(msg)
 			request.flash('error', exception.message)
-			const redirectUrl = request?.session?.returnTo
-			if (redirectUrl) {
-				return response.redirect(redirectUrl)
-			}
-			return response.redirect('/')
+			const redirectUrl = request?.session?.returnToOnError ?? request?.session?.returnTo ?? '/'
+			return response.redirect(redirectUrl)
 		}
 
 		if (exception instanceof ValidationException) {
@@ -66,12 +62,8 @@ export class CustomErrorFilter implements ExceptionFilter {
 			log.write(log_msg)
 
 			request.flash('error', msg)
-			const redirectUrl = request?.session?.returnTo
-			if (redirectUrl) {
-				return response.redirect(redirectUrl)
-			}
-			// TODO: If an user then redirect to its show page
-			return response.redirect('/records')
+			const redirectUrl = request?.session?.returnToOnError ?? request?.session?.returnTo ?? '/'
+			return response.redirect(redirectUrl)
 		}
 
 		// Default handler

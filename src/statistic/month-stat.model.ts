@@ -12,6 +12,9 @@ export class MonthStat extends Model {
 	})
 	employeeID: UUID
 
+	@BelongsTo(() => Employee)
+	employee: Employee
+
 	@PrimaryKey
 	@Column({
 		type: DataType.INTEGER,
@@ -25,9 +28,6 @@ export class MonthStat extends Model {
 		allowNull: false,
 	})
 	year: number
-
-	@BelongsTo(() => Employee)
-	employee: Employee
 
 	@Column({
 		type: DataType.INTEGER,

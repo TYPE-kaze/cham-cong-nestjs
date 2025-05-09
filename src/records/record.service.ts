@@ -10,7 +10,7 @@ import { FlashError } from "src/flash-error";
 import { CreateRecordDTO } from "./dto/create-record.dto";
 import { DeleteRecordDTO } from "./dto/delete-record.dto";
 import xlsx from 'xlsx'
-import { UpdateReasonDTO } from "./dto/update-reason.dto";
+import { UpdateReasonDTO } from "./dto/update-one-reason.dto";
 import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 const { read, utils } = xlsx
 const { decode_range, encode_cell } = utils

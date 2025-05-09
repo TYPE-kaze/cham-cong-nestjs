@@ -5,13 +5,15 @@ import { CreateRecordDTO } from "./dto/create-record.dto";
 import { DeleteRecordDTO } from "./dto/delete-record.dto";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
-import { StoreReturnToInterceptor } from "src/store-returnto.interceptor";
 import { UUID } from "crypto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { FileValidationPipe } from "./excel-validator.pipe";
 import { FlashError } from "src/flash-error";
-import { UpdateReasonDTO } from "./dto/update-reason.dto";
+import { UpdateReasonDTO } from "./dto/update-one-reason.dto";
 import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
+import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
+import { renderDay } from "./renders/day";
+import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
 
 @Controller('records')
 export class RecordController {
@@ -38,16 +40,9 @@ export class RecordController {
 	}
 
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
-	@Get('all')
-	async getAll() {
-		const records = await this.recordService.getAll()
-		return records
-	}
-
-	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Get('import')
 	@Render('records/import')
-	@UseInterceptors(StoreReturnToInterceptor)
 	getImportForm() {
 		return { currentYear: new Date().getFullYear() }
 	}
@@ -55,14 +50,15 @@ export class RecordController {
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	@Post('import')
 	@UseInterceptors(FileInterceptor('formFile'))
-	@Redirect('/records/day')
 	async importFormFile(
 		@UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
 		@Body('year', ParseIntPipe) year: number,
-		@Req() req
+		@Req() req,
+		@Res() res,
 	) {
 		const [addedCount, updatedCount] = await this.recordService.XLXSToDatabase(file, year)
 		req.flash('success', `Nhập mới ${addedCount}, cập nhật ${updatedCount} chấm công từ file ${file.originalname}`)
+		return res.redirect(req?.session?.returnTo ?? '/records/day')
 	}
 
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
@@ -76,11 +72,7 @@ export class RecordController {
 	) {
 		await this.recordService.checkoutEmployee(employeeID, date)
 		req.flash('success', `Checkout thành công`)
-		const redirectUrl = req?.session?.returnTo
-		if (redirectUrl) {
-			return res.redirect(redirectUrl)
-		}
-		return res.redirect('/records/day')
+		return res.redirect(req?.session?.returnTo ?? '/records/day')
 	}
 
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
@@ -94,11 +86,7 @@ export class RecordController {
 	) {
 		await this.recordService.checkinEmployee(employeeID, date)
 		req.flash('success', `Checkin thành công`)
-		const redirectUrl = req?.session?.returnTo
-		if (redirectUrl) {
-			return res.redirect(redirectUrl)
-		}
-		return res.redirect('/records/day')
+		return res.redirect(req?.session?.returnTo ?? '/records/day')
 	}
 
 	@Get('day')
@@ -116,95 +104,13 @@ export class RecordController {
 		if (!date || date === '') {
 			date = todayDate
 		}
-		const isToday = todayDate === date
-
 		const employeeWithRecordList = await this.employeeService.getEmployeeWithRecords(date, employeeName)
-		let lNum = 0, eNum = 0, bNum = 0
-		let renderRecords = employeeWithRecordList.map((e) => {
-			let startTime, endTime, isAtWorkLate, isLeaveEarly, reason
-			let isNoRecord = true
-			if (e.records.length === 1) { // has not yet been checked that day
-				const r = e.records[0]
-				startTime = r.startTime
-				endTime = r.endTime
-				isAtWorkLate = r.isAtWorkLate
-				isLeaveEarly = r.isLeaveEarly
-				isNoRecord = false
-				reason = r.reason
-			}
-			const isCheckin = startTime ? true : false
-			const isCheckout = endTime ? true : false
-
-			let rowColorClass = ''
-			if (isAtWorkLate && isLeaveEarly) {
-				lNum++
-				eNum++
-				bNum++
-				rowColorClass = 'table-danger'
-			}
-			else if (isAtWorkLate && !isLeaveEarly) {
-				lNum++
-				rowColorClass = 'table-warning'
-			}
-			else if (!isAtWorkLate && isLeaveEarly) {
-				eNum++
-				rowColorClass = 'table-secondary'
-			}
-			return {
-				reason,
-				startTime,
-				endTime,
-				date,
-				isAtWorkLate,
-				isLeaveEarly,
-				rowColorClass,
-				employee: e,
-				isCheckin,
-				isCheckout,
-				isNoRecord
-			}
-		})
-
-		//Filter 1
-		switch (filter) {
-			case '1':
-				renderRecords = renderRecords.filter((r) => !r.isCheckin)
-				break;
-			case '2':
-				renderRecords = renderRecords.filter((r) => r.isCheckin)
-				break;
-		}
-
-		switch (filter2) {
-			case '1':
-				renderRecords = renderRecords.filter((r) => r.isAtWorkLate)
-				break;
-			case '2':
-				renderRecords = renderRecords.filter((r) => r.isLeaveEarly)
-				break;
-			case '3':
-				renderRecords = renderRecords.filter((r) => r.isLeaveEarly && r.isAtWorkLate)
-				break;
-			case '4':
-				renderRecords = renderRecords.filter((r) => r.isLeaveEarly || r.isAtWorkLate)
-				break;
-		}
-
-		return {
-			records: renderRecords,
-			filter,
-			filter2,
-			date,
-			employeeName,
-			lNum,
-			eNum,
-			bNum,
-			isToday
-		}
+		return renderDay(todayDate, date, employeeWithRecordList, filter, filter2, employeeName)
 	}
 
 	@Get()
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	@UseInterceptors(StoreReturnToInterceptor)
 	@Render('records/index')
 	async getIndex(
 		@Query('employeeID') employeeID: string,
@@ -244,9 +150,9 @@ export class RecordController {
 	}
 
 	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Get('new')
 	@Render('records/new')
-	// @UseInterceptors(StoreReturnToInterceptor)
 	async getNewForm(
 		@Query('date') date: string | undefined,
 		@Query('employeeID') employeeID: string | undefined,
@@ -254,12 +160,12 @@ export class RecordController {
 	) {
 		const isChecker = req.user.role === 'checker'
 		const employees = await this.employeeService.getAll()
-		return { date, employees, employeeID, isChecker }
+		return { date, employees, employeeID, isChecker, returnTo: req.session.returnTo }
 	}
 
 	@UseGuards(AuthenticatedGuard)
+	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Get('edit')
-	// @UseInterceptors(StoreReturnToInterceptor)
 	@Render('records/edit')
 	async getEditForm(
 		@Query() getEditFormDTO,
@@ -270,11 +176,12 @@ export class RecordController {
 		const record = await this.recordService.findOne(date, employeeID)
 		const { startTime, endTime, reason } = record.dataValues
 		const isChecker = req.user.role === 'checker'
-		return { isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
+		const returnTo = req.session.returnTo
+		return { returnTo, isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
 	}
 
 	@Post()
-	@UseGuards(AuthenticatedGuard)
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	async createRecord(
 		@Req() req,
 		@Res() res,
@@ -294,7 +201,6 @@ export class RecordController {
 	async deleteRecord(
 		@Req() req,
 		@Res() res,
-		// @Body() deleleRecordDTO: DeleteRecordDTO) {
 		@Query() deleleRecordDTO: DeleteRecordDTO) {
 		await this.recordService.deleteOne(deleleRecordDTO)
 		req.flash('success', `Xóa chấm công thành công`)
@@ -315,6 +221,7 @@ export class RecordController {
 		await this.recordService.updateOne(updateRecordDTO)
 		req.flash('success', `Cập nhật chấm công thành công`)
 		const redirectUrl = req?.session?.returnTo
+		console.log(req.session)
 		if (redirectUrl) {
 			return res.redirect(redirectUrl)
 		}

@@ -7,15 +7,18 @@
 	<main class="container mt-3 mb-3">
 		<%- include("../partials/flash") %>
 		<h1><%=employee.name%> </h1>
-		<h2>Thông tin cá nhân</h2>
-		<ul>
-			<li><b>Tên</b>: <%=employee.name%></li>
-			<li><b>Email</b>: <%=employee.email%></li>
-			<li><b>SĐT</b>: <%=employee.phone%></li>
-		</ul>
-
+		<div class="mb-3">
+			<h2>Thông tin cá nhân</h2>
+			<ul>
+				<li><b>Tên</b>: <%=employee.name%></li>
+				<li><b>Email</b>: <%=employee.email%></li>
+				<li><b>SĐT</b>: <%=employee.phone%></li>
+			</ul>
+			<div>
+				<a href="/employees/edit/<%=employee.id%>" class="btn btn-success">Sửa</a>
+			</div>
+		</div>
 		<h2>Lịch sử đi làm</h2>
-		<!-- <h3 class="text-center">Năm <input class="year-picker form-control" type="text" value="2025"></h3> -->
 		<form method="GET" action="/employees/<%=id%>" class="row g-3 align-items-center mb-3">
 			<div class="col-3 offset-4">
 				<label class="visually-hidden" for="year">Năm</label>
@@ -29,42 +32,7 @@
 				<button type="submit" class="btn btn-primary">Đổi năm</button>
 			</div>
 		</form>
-		<div class="container history">
-			<% let i = 0; const cellPerRow = 4 %>
-			<% for ( const month of calendar.months ) { %>
-			<% if ( i % cellPerRow === 0) { %>
-			<div class="row mb-3">
-				<% } %>
-				<% const {monthName, monthNo, days, firstDayOffset } = month %>
-				<div class="calendar col-3">
-					<div class="month-indicator">
-						<time datetime="<%=`${calendar.year}-${monthNo}`%>"> <%=`${monthName}`%> </time>
-					</div>
-					<div class="day-of-week">
-						<div>T2</div>
-						<div>T3</div>
-						<div>T4</div>
-						<div>T5</div>
-						<div>T6</div>
-						<div>T7</div>
-						<div>CN</div>
-					</div>
-					<div class="date-grid">
-						<% for (const day of days) { %>
-						<% const { dayNo, dayStr, classStr, recordLink } = day %>
-						<a href="<%=recordLink%>" class="<%=classStr%> d-flex align-items-center justify-content-center" style="<%= dayNo === 1 ? `grid-column: ${firstDayOffset};` : '' %>">
-							<time datetime="<%=dayStr%>"><%=dayNo%></time>
-						</a>
-						<% } %>
-					</div>
-				</div>
-				<% if ( i % cellPerRow === cellPerRow - 1) { %>
-			</div>
-			<% } %>
-			<% i++ %>
-			<% } %>
-
-		</div>
+		<%- include('show-heat-map.partial.ejs') %>
 </body>
 
 </html>
