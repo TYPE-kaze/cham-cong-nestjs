@@ -1,4 +1,22 @@
 <tr>
+	<!-- Modal -->
+	<div class="modal" id="confirm-delete-<%=i%>" tabindex="-1" aria-labelledby="confirm-delete" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header text-bg-danger">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Xóa nhân viên <%=e.name%></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					Nhấn xác nhận để xóa nhân viên
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Quay lại</button>
+					<a class="btn btn-danger" href="/employees/<%=e.id%>?_method=DELETE">Xác nhận</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	<td>
 		<%=i + 1 + ( ( pageNo - 1 ) * numOfRowPerPage )%>
 	</td>
@@ -19,9 +37,13 @@
 	<td>
 		<%= e.endWorkTime %>
 	</td>
-	<td class="text-center">
-		<a type="button" class="btn btn-success" href="/employees/edit/<%=e.dataValues.id%>">
+	<td class="d-flex text-center">
+		<a type="button" class="btn btn-success me-1" href="/employees/edit/<%=e.dataValues.id%>">
 			<i class="bi bi-pencil-square"></i>
 		</a>
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirm-delete-<%=i%>">
+			<i class="bi bi-person-x"></i>
+		</button>
 	</td>
 </tr>
