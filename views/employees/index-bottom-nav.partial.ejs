@@ -9,8 +9,9 @@
 <% const searchUrl = `/employees?query=${query}&sort=${sort}&order=${order}&numOfRowPerPage=${numOfRowPerPage}` %>
 <div class="row justify-content-between">
 	<div class="d-md-flex justify-content-between align-items-center col-md-auto me-auto">
-		<% const startIndex = 1 + ( ( pageNo - 1 ) * numOfRowPerPage) %>
-		<% let endIndex = numOfRowPerPage + ( ( pageNo - 1 ) * numOfRowPerPage) %>
+		<% const b = ( pageNo - 1 ) * numOfRowPerPage %>
+		<% const startIndex = 1 + b %>
+		<% let endIndex = numOfRowPerPage + b %>
 		<% endIndex = endIndex > count ? count : endIndex %>
 		<div id="example_info">Từ <%=startIndex%> đến <%=endIndex%> trên tổng <%=count%> nhân viên</div>
 	</div>
@@ -25,12 +26,38 @@
 					<li class="<%= isFirstPage ? 'disabled' : '' %>">
 						<a href="<%=isFirstPage ? '#' : `${searchUrl}&pageNo=${pageNo - 1}`%>" class="page-link previous">‹</a>
 					</li>
+					<% if (numOfPage <= 7) { %> <!-- The number of pages is <= 7, so display all -->
+
 					<% for( let index = 1; index <= numOfPage; index++ ) { %>
 					<% const url = `${searchUrl}&pageNo=${index}` %>
-					<% isCurPage = index === pageNo %>
+					<% const isCurPage = index === pageNo %>
 					<li class="page-item <%= isCurPage ? 'active' : '' %>">
 						<a href="<%=url%>" class="page-link"><%=index%></a>
 					</li>
+					<% } %>
+
+					<% } else { %> <!-- The number of pages is greater than 7, so only render 3 brefore the current page, 3 after the current page-->
+
+					<!-- left side and currentPage -->
+					<% let leftStartIndex = pageNo - 3 %>
+					<% leftStartIndex = leftStartIndex < 1 ? 1 : leftStartIndex %>
+					<% for( ; leftStartIndex <= pageNo; leftStartIndex++ ) { %>
+					<% const url = `${searchUrl}&pageNo=${leftStartIndex}` %>
+					<% const isCurPage = leftStartIndex === pageNo %>
+					<li class="page-item <%= isCurPage ? 'active' : '' %>">
+						<a href="<%=url%>" class="page-link"><%=leftStartIndex%></a>
+					</li>
+					<% } %>
+					<!-- right side -->
+					<% let rightEndIndex = pageNo + 3  %>
+					<% rightEndIndex = rightEndIndex > numOfPage ? numOfPage : rightEndIndex%>
+					<% for( index = pageNo + 1; index <= rightEndIndex; index++ ) { %>
+					<% const url = `${searchUrl}&pageNo=${index}` %>
+					<li class="page-item">
+						<a href="<%=url%>" class="page-link"><%=index%></a>
+					</li>
+					<% } %>
+
 					<% } %>
 					<% const isLastPage = pageNo === numOfPage %>
 					<li class="page-item <%= isLastPage ? 'disabled' : '' %>">
