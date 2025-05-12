@@ -18,11 +18,11 @@ export class GetIndexQueryDTO {
 
 	@Transform(({ value }) => value === '' ? undefined : value)
 	@IsOptional()
-	@Matches(/^[0-9]+$/)
+	@Matches(/^(?!0+)[0-9]+$/)
 	numOfRowPerPage?: string
 
 	@Transform(({ value }) => value === '' ? undefined : value)
 	@IsOptional()
-	@Matches(/^[0-9]+$/)
+	@Matches(/^(?!0+)[0-9]+$/)
 	pageNo?: string
 }
