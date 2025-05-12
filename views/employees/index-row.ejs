@@ -1,6 +1,6 @@
 <tr>
 	<td>
-		<%=i%>
+		<%=i + 1 + ( ( pageNo - 1 ) * numOfRowPerPage )%>
 	</td>
 	<td>
 		<a href="/employees/<%=e.dataValues.id%>">

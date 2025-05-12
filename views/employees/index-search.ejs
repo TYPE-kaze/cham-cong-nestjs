@@ -8,13 +8,58 @@
 		<input value="" type="date" name="date" id="search-date" class="form-control">
 	</div>
 </form> -->
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-2">
-	<div class="btn-toolbar mb-2 mb-md-0">
-		<form action="/employees" method="GET">
-			<div class="input-group">
-				<input value="<%=name%>" type="text" class="form-control" placeholder="Tên nhân viên" name="name">
-				<button class="btn btn-outline-secondary" type="submit">Lọc</button>
-			</div>
-		</form>
+<!-- <form class="row mb-3" action="/employees" method="GET">
+	<div class="col-3">
+		<input value="<%#=name%>" type="text" class="form-control" placeholder="Tên nhân viên" name="name">
 	</div>
-</div>
+	<div class="col-1">
+		<button class="btn btn-outline-secondary" type="submit">Lọc</button>
+	</div>
+</form> -->
+
+<!-- <form class="mb-3 row row-cols-lg-auto g-3 align-items-center">
+	<div class="col-12">
+		<label class="visually-hidden" for="numOfRowPerPage">Preference</label>
+		<div class="input-group">
+			<div class="input-group-text">Số dòng</div>
+			<select class="form-select" id="numOfRowPerPage" name="numOfRowPerPage">
+				<option <%= numOfRowPerPage === 15 ? 'selected' : "" %> value="15">15</option>
+				<option <%= numOfRowPerPage === 30 ? 'selected' : "" %> value="30">30</option>
+				<option <%= numOfRowPerPage === 50 ? 'selected' : "" %> value="50">50</option>
+				<option <%= numOfRowPerPage === 100 ? 'selected' : "" %> value="100">100</option>
+			</select>
+		</div>
+	</div>
+	<div class="col-12">
+		<label class="visually-hidden" for="name">Tên nhân viên</label>
+		<div class="input-group">
+			<div class="input-group-text">Tên</div>
+			<input type="text" name="name" class="form-control" id="name" placeholder="Nhân viên" value="<%#=name%>">
+		</div>
+	</div>
+
+	<div class="col-12">
+		<button type="submit" class="btn btn-primary">Lọc</button>
+	</div>
+</form> -->
+
+<form action="/employees" method="GET" class="mb-2 d-flex justify-content-between align-items-center">
+	<div class="d-flex align-items-center">
+		<select class="form-select" id="numOfRowPerPage" name="numOfRowPerPage">
+			<option <%= numOfRowPerPage === 15 ? 'selected' : "" %> value="15">15</option>
+			<option <%= numOfRowPerPage === 30 ? 'selected' : "" %> value="30">30</option>
+			<option <%= numOfRowPerPage === 50 ? 'selected' : "" %> value="50">50</option>
+			<option <%= numOfRowPerPage === 100 ? 'selected' : "" %> value="100">100</option>
+		</select>
+		<label class="form-label m-0 ms-2" for="numOfRowPerPage">dòng</label>
+	</div>
+	<div class="d-flex">
+		<a class="btn btn-outline-secondary me-2" href="/employees">
+			<i class="bi bi-arrow-counterclockwise"></i>
+		</a>
+		<div class="input-group">
+			<input type="text" name="query" class="form-control" id="query" value="<%=query%>">
+			<button class="btn btn-outline-primary" type="submit">Tìm kiếm</button>
+		</div>
+	</div>
+</form>

@@ -37,3 +37,7 @@ $(document).ready(function () {
 		startDate: new Date(2000, 0, 1)
 	});
 });
+
+// enable app tooltips on the page
+const tooltipTriggerList = document.querySelectorAll('.has-tooltip')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

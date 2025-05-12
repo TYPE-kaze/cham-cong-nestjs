@@ -2,7 +2,7 @@
 <div class="modal" id="confirm-delete" tabindex="-1" aria-labelledby="confirm-delete" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header text-bg-danger">
 				<h1 class="modal-title fs-5" id="exampleModalLabel">Xác nhận xóa chấm công</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
@@ -11,7 +11,6 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Quay lại</button>
-				<!-- <button type="button" class="btn btn-primary">Xóa</button> -->
 				<a class="btn btn-danger" href="/records?date=<%=date%>&employeeID=<%=employeeID%>&_method=DELETE">Xác nhận</a>
 			</div>
 		</div>

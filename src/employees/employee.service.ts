@@ -4,15 +4,48 @@ import { InjectModel } from "@nestjs/sequelize";
 import { Employee } from "./employee.model";
 import { CreateEmployeeDTO } from "./dto/create-employee.dto";
 import { UUID } from "node:crypto";
-import { literal, Op } from "sequelize";
+import { literal, Op, where } from "sequelize";
 import { Record } from "src/records/record.model";
 import { FlashError } from 'src/flash-error';
+import { GetIndexQueryDTO } from './dto/get-index-query.dto';
 
 @Injectable()
 export class EmployeeService {
 	constructor(
 		@InjectModel(Employee) private readonly employeeModel: typeof Employee,
 	) { }
+
+	async getEmployeeForIndexPage(getIndexQueryDTO: GetIndexQueryDTO) {
+		const { query, sort, order } = getIndexQueryDTO
+
+		const option: any = {}
+		if (query) {
+			option.where = {
+				[Op.or]: [
+					{ name: { [Op.like]: `%${query}%` } },
+					{ phone: { [Op.like]: `%${query}%` } },
+					{ email: { [Op.like]: `%${query}%` } },
+				],
+			}
+		}
+
+		if (sort) {
+			const sortOrder = order ?? 'ASC'
+			option.order = [[sort, sortOrder]]
+		}
+
+		const numOfRowPerPage = getIndexQueryDTO.numOfRowPerPage
+			? parseInt(getIndexQueryDTO.numOfRowPerPage)
+			: 30
+		option.limit = numOfRowPerPage
+
+		const pageNo = getIndexQueryDTO.pageNo
+			? parseInt(getIndexQueryDTO.pageNo)
+			: 1
+		option.offset = (pageNo - 1) * numOfRowPerPage
+
+		return await this.employeeModel.findAndCountAll(option)
+	}
 
 	async getEmployeeWithRecords(date: string, name?: string) {
 		let where

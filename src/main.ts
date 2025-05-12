@@ -47,6 +47,9 @@ async function bootstrap() {
 		new ValidationPipe({
 			stopAtFirstError: true,
 			transform: true,
+			transformOptions: {
+				enableImplicitConversion: true
+			},
 			exceptionFactory: errors => new ValidationException(errors)
 		}))
 	app.useGlobalFilters(new CustomErrorFilter())

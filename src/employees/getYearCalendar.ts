@@ -40,7 +40,7 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 			// process records to style calendar
 			let classStr = ''
 			let isHasRecord = false
-			let recordLink
+			let recordLink, tooltip
 			if (!isFuture) {
 				if ( // has a record
 					recordC < records.length
@@ -51,27 +51,30 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 					recordLink = `/records/edit?date=${dateStr}&employeeID=${employeeID}`
 
 					if (isAtWorkLate && isLeaveEarly) {
-						classStr = classStr + 'bg-danger bg-opacity-75'
+						classStr = classStr + 'bg-danger bg-opacity-75 s_both has-tooltip'
+						tooltip = 'Cả hai'
 					} else if (isAtWorkLate) {
-						classStr = classStr + 'bg-warning bg-opacity-50'
+						classStr = classStr + 'bg-warning bg-opacity-50 s_late has-tooltip'
+						tooltip = 'Đến muộn'
 					} else if (isLeaveEarly) {
-						classStr = classStr + 'bg-danger bg-opacity-50'
+						classStr = classStr + 'bg-danger bg-opacity-50 s_early has-tooltip'
+						tooltip = 'Về sớm'
 					} else if (
 						dayOfWeek !== 0 && dayOfWeek !== 6
 						&& startTime
 					) {
-						classStr = classStr + 'bg-success bg-opacity-50'
+						classStr = classStr + 'bg-success bg-opacity-50 s_good has-tooltip'
+						tooltip = 'Đủ công'
 					}
+
 					recordC++
 				} else { // not has record
 					recordLink = `/records/new?date=${dateStr}&employeeID=${employeeID}`
 				}
-				if (month == 8) {
-					console.log(dateStr + ', ' + dayOfWeek)
-				}
 
 				if (classStr === '' && (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-					classStr = classStr + 'bg-secondary bg-opacity-50'
+					classStr = classStr + 'bg-secondary bg-opacity-50 s_none has-tooltip'
+					tooltip = 'Không công'
 				}
 
 			} else { // date is in future
@@ -82,8 +85,8 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 				dateStr,
 				dayNo: date.getDate(),
 				classStr: classStr,
-				recordLink
-
+				recordLink,
+				tooltip
 			});
 			date.setDate(date.getDate() + 1);
 		}

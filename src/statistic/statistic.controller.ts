@@ -100,6 +100,7 @@ export class StatisticController {
 	}
 
 	@Post('month/update')
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
 	async updateMonthStat(
 		@Query('month') month: string | undefined,
 		@Query('year') year: string | undefined,
@@ -117,7 +118,6 @@ export class StatisticController {
 
 		await this.statService.updateMonthStatBaseOnRecord(month, year)
 		req.flash('success', `Cập nhật thống kê tháng ${month} năm ${year}`)
-		// const redirectUrl = req?.session?.returnTo
-		return res.redirect('/stats/month')
+		return res.redirect(req?.session?.returnTo ?? '/stats/month')
 	}
 }

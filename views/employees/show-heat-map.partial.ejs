@@ -20,9 +20,9 @@
 			</div>
 			<div class="date-grid">
 				<% for (const day of days) { %>
-				<% const { dayNo, dayStr, classStr, recordLink } = day %>
+				<% const { dayNo, dayStr, classStr, recordLink, tooltip } = day %>
 				<% const firstDayClassStr = dayNo === 1 ? `first-day-offset-${firstDayOffset}` : '' %>
-				<a href="<%=recordLink%>" class="<%=classStr%> <%=firstDayClassStr%> d-flex align-items-center justify-content-center ">
+				<a data-bs-toggle="tooltip" data-bs-title="<%=tooltip%>" href="<%=recordLink%>" class="<%=classStr%> <%=firstDayClassStr%> d-flex align-items-center justify-content-center ">
 					<time datetime="<%=dayStr%>"><%=dayNo%></time>
 				</a>
 				<% } %>

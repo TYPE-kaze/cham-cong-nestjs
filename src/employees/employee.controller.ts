@@ -10,6 +10,9 @@ import { renderYearCalendar } from "src/employees/getYearCalendar";
 import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
 import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
 import { SameEmployeeGuard } from "src/auth/same-employee.guard";
+import { GetIndexQueryDTO } from "./dto/get-index-query.dto";
+import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
+import { getEmpoyeeListHeaders } from "./getEmpoyeeListHeaders";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -17,15 +20,23 @@ export class EmployeeController {
 	constructor(private employeeService: EmployeeService) { }
 	@Get()
 	@UseGuards(CheckerGuard)
-	@UseInterceptors(StoreReturnToInterceptor)
+	@UseInterceptors(StoreBaseUrlToReturnToInterceptor)
 	@Render('employees/index')
 	async getIndex(
-		@Query('name') name: string | undefined
+		@Query() getIndexQueryDTO: GetIndexQueryDTO
 	) {
-		const employees = name
-			? await this.employeeService.findByName(name)
-			: await this.employeeService.getAll()
-		return { employees, name }
+		const { query, sort, order } = getIndexQueryDTO
+		const numOfRowPerPage = getIndexQueryDTO.numOfRowPerPage
+			? parseInt(getIndexQueryDTO.numOfRowPerPage)
+			: 30
+		const pageNo = getIndexQueryDTO.pageNo
+			? parseInt(getIndexQueryDTO.pageNo)
+			: 1
+
+		const { rows: employees, count } = await this.employeeService.getEmployeeForIndexPage(getIndexQueryDTO)
+		const headers = getEmpoyeeListHeaders()
+		const defaultOrder = 'ASC'
+		return { employees, query, defaultOrder, sort, order, headers, numOfRowPerPage, count, pageNo }
 	}
 
 	@Get('new')

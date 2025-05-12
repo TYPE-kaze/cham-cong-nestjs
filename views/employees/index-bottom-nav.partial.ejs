@@ -1,0 +1,47 @@
+<% const numOfPage = Math.ceil(count / numOfRowPerPage) %>
+<% if (count === 0 || pageNo > numOfPage ) { %>
+<!-- No data -->
+<% } else { %>
+<% query = query ? query : '' %>
+<% sort = sort ? sort : '' %>
+<% order = order ? order : '' %>
+<% numOfRowPerPage = numOfRowPerPage ? numOfRowPerPage : '' %>
+<% const searchUrl = `/employees?query=${query}&sort=${sort}&order=${order}&numOfRowPerPage=${numOfRowPerPage}` %>
+<div class="row justify-content-between">
+	<div class="d-md-flex justify-content-between align-items-center col-md-auto me-auto">
+		<% const startIndex = 1 + ( ( pageNo - 1 ) * numOfRowPerPage) %>
+		<% let endIndex = numOfRowPerPage + ( ( pageNo - 1 ) * numOfRowPerPage) %>
+		<% endIndex = endIndex > count ? count : endIndex %>
+		<div id="example_info">Từ <%=startIndex%> đến <%=endIndex%> trên tổng <%=count%> nhân viên</div>
+	</div>
+	<div class="d-md-flex justify-content-between align-items-center col-md-auto ms-auto">
+		<div>
+			<nav aria-label="pagination">
+				<ul class="pagination">
+					<% const isFirstPage = pageNo === 1  %>
+					<li class="page-item <%= isFirstPage ? 'disabled' : '' %>">
+						<a href="<%=isFirstPage ? '#' : searchUrl%>" class="page-link first" role="link">«</a>
+					</li>
+					<li class="<%= isFirstPage ? 'disabled' : '' %>">
+						<a href="<%=isFirstPage ? '#' : `${searchUrl}&pageNo=${pageNo - 1}`%>" class="page-link previous">‹</a>
+					</li>
+					<% for( let index = 1; index <= numOfPage; index++ ) { %>
+					<% const url = `${searchUrl}&pageNo=${index}` %>
+					<% isCurPage = index === pageNo %>
+					<li class="page-item <%= isCurPage ? 'active' : '' %>">
+						<a href="<%=url%>" class="page-link"><%=index%></a>
+					</li>
+					<% } %>
+					<% const isLastPage = pageNo === numOfPage %>
+					<li class="page-item <%= isLastPage ? 'disabled' : '' %>">
+						<a href="<%=isLastPage ? '#' : `${searchUrl}&pageNo=${pageNo + 1}`%>" class="page-link next">›</a>
+					</li>
+					<li class="page-item <%= isLastPage ? 'disabled' : '' %>">
+						<a href="<%=isLastPage ? '#' : `${searchUrl}&pageNo=${numOfPage}`%>" class="page-link last">»</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<% } %>

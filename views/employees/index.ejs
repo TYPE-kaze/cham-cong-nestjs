@@ -8,31 +8,32 @@
 		<%- include("../partials/flash") %>
 		<div class="row">
 			<main class="col-12 px-4">
-				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+				<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-2 border-bottom">
 					<h1>Danh sách nhân viên</h1>
 				</div>
-				<%- include('index-search', { name }); %>
+				<%- include('index-search', { query }); %>
+				<% const numOfPage = Math.ceil(count / numOfRowPerPage) %>
+				<% if (count === 0 || pageNo > numOfPage ) { %>
+				<!-- no data -->
+				<div class="row">
+					<div class="col-6 offset-3 alert alert-dark" role="alert">
+						<h1>Không có dữ liệu</h1>
+						<p>Không tìm thấy dữ liệu nào khớp với tìm kiếm. <a class="alert-link" href="/employees">Đặt lại</a> bộ tìm kiếm ?</p>
+					</div>
+				</div>
+				<% } else { %>
 				<div class="table-responsive small">
-					<table class="table table-bordered table-hover table-striped">
-						<thead>
-							<tr>
-								<th scope="col">#</th>
-								<th scope="col">Tên</th>
-								<th scope="col">Email</th>
-								<th scope="col">SĐT</th>
-								<th scope="col">Giờ đi làm</th>
-								<th scope="col">Giờ tan làm</th>
-								<th scope="col" style="width:100px;">Thao tác</th>
-							</tr>
-						</thead>
+					<table class="employees-list table table-bordered table-hover table-striped">
+						<%- include('index-table-header.partial.ejs', { }); %>
 						<tbody>
-							<% for (let i=0; i < employees.length; i++) { %>
+							<% for (let i = 0; i < employees.length; i++) { %>
 							<%- include('index-row', { i, e: employees[i] }); %>
 							<% } %>
 						</tbody>
 					</table>
-
 				</div>
+				<% } %>
+				<%- include('index-bottom-nav.partial.ejs'); %>
 			</main>
 		</div>
 	</div>
