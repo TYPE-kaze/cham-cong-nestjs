@@ -4,10 +4,12 @@ import { StatisticService } from "./statistic.service";
 import { EmployeeService } from "src/employees/employee.service";
 import { InjectModel } from "@nestjs/sequelize";
 import { MonthStat } from "./month-stat.model";
-// import { StoreReturnToInterceptor } from "src/cur-returnto.interceptor";
 import { AuthenticatedGuard } from "src/auth/authenticated.guard";
 import { CheckerGuard } from "src/auth/checker.guard";
 import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
+import { GetMonthQueryDTO } from "./dto/get-month-query.dto";
+import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
+import { headers } from "./constants/month-table-headers";
 
 @UseGuards(AuthenticatedGuard, CheckerGuard)
 @Controller('stats')
@@ -79,11 +81,12 @@ export class StatisticController {
 
 	@Get('month')
 	@Render('stats/month')
-	@UseInterceptors(StoreReturnToInterceptor)
+	@UseInterceptors(StoreBaseUrlToReturnToInterceptor)
 	async getStatByMonth(
-		@Query('monthYear') monthYear: string | undefined,
+		@Query() getMonthQueryDTO: GetMonthQueryDTO
 	) {
 		let month: string, year: string
+		const { monthYear, name, numOfRowPerPage, pageNo, order, sort } = getMonthQueryDTO
 		if (!monthYear || monthYear == '') {
 			const now = new Date()
 			month = String(now.getMonth() + 1)
@@ -95,8 +98,17 @@ export class StatisticController {
 			year = frags[1]
 		}
 
-		const list = await this.statService.getStatOfMonth(month, year)
-		return { month: month.replace(/^[1-9]$/, '0$&'), year, list }
+		const { rows: list, count } = await this.statService.getStatOfMonth(getMonthQueryDTO)
+		return {
+			pageNo: pageNo ? parseInt(pageNo) : 1,
+			count,
+			month: month.replace(/^[1-9]$/, '0$&'), year, list, headers,
+			name: name ?? '',
+			numOfRowPerPage: numOfRowPerPage ? parseInt(numOfRowPerPage) : 30,
+			defaultOrder: 'ASC',
+			order: order ?? '',
+			sort: sort ?? ''
+		}
 	}
 
 	@Post('month/update')

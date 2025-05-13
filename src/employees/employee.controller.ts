@@ -13,6 +13,7 @@ import { SameEmployeeGuard } from "src/auth/same-employee.guard";
 import { GetIndexQueryDTO } from "./dto/get-index-query.dto";
 import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
 import { getEmpoyeeListHeaders } from "./getEmpoyeeListHeaders";
+import { workShifts } from "src/constants/work-shift";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -36,7 +37,7 @@ export class EmployeeController {
 		const { rows: employees, count } = await this.employeeService.getEmployeeForIndexPage(getIndexQueryDTO)
 		const headers = getEmpoyeeListHeaders()
 		const defaultOrder = 'ASC'
-		return { employees, query, defaultOrder, sort, order, headers, numOfRowPerPage, count, pageNo }
+		return { employees, query, defaultOrder, sort, order, headers, numOfRowPerPage, count, pageNo, workShifts }
 	}
 
 	@Get('new')
@@ -44,7 +45,7 @@ export class EmployeeController {
 	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Render('employees/new')
 	async getNewForm() {
-		return { startWorkTime: '08:30', endWorkTime: '17:30' }
+		return { workShifts }
 	}
 
 	@Get(':id')
@@ -74,7 +75,7 @@ export class EmployeeController {
 	@Render('employees/edit')
 	async getEditForm(@Param('id', ParseUUIDPipe) id: UUID) {
 		const employee = await this.employeeService.findOne(id)
-		return { employee }
+		return { employee, workShifts }
 	}
 
 	@Get('password/:id')
@@ -108,8 +109,8 @@ export class EmployeeController {
 	) {
 		const employee = await this.employeeService.createOne(createEmployeeDTO)
 		req.flash('success', `Thêm nhân viên ${employee.name} thành công`)
-		// return res.redirect(req?.session?.returnTo ?? `/employees/${employee.id}`)
-		return res.redirect(`/employees/${employee.id}`)
+		// return res.redirect(`/employees/${employee.id}`)
+		return res.redirect(req?.session?.returnTo ?? `/employees/${employee.id}`)
 	}
 
 	@Put(':id')

@@ -34,13 +34,13 @@
 		</div>
 	</div>
 	<div class="row mb-3">
-		<div class="col-6">
-			<label for="startWorkTime" class="form-label">Giờ làm việc</label>
-			<input value="<%=employee.startWorkTime.slice(0, employee.startWorkTime.length - 3)%>" class="form-control" type="time" name="startWorkTime" id="startWorkTime">
-		</div>
-		<div class="col-6">
-			<label for="endWorkTime" class="form-label">Giờ tan làm</label>
-			<input value="<%=employee.endWorkTime.slice(0, employee.endWorkTime.length - 3)%>" class="form-control" type="time" name="endWorkTime" id="endWorkTime">
+		<div class="col-5">
+			<label for="shift" class="form-label">Ca làm việc</label>
+			<select class="form-select" id="shift" name="shift">
+				<% const { shift } = employee  %>
+				<option <%=shift === '1' ? 'selected' : ''%> value="1"><%=workShifts[1].name%> (Từ <%=workShifts[1].startTime%> đến <%=workShifts[1].endTime%>)</option>
+				<option <%=shift === '2' ? 'selected' : ''%> value="2"><%=workShifts[2].name%> (Từ <%=workShifts[2].startTime%> đến <%=workShifts[2].endTime%>)</option>
+			</select>
 		</div>
 	</div>
 	<button class="btn btn-success" type="submit">Sửa</button>

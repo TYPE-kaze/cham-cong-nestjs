@@ -1,0 +1,18 @@
+<thead>
+	<tr>
+		<% for( let i = 0; i < headers.length; i++ ) { %>
+		<% const { title, classStr, type } = headers[i] %>
+		<% const isSelectedSort = type === sort %>
+		<% const c = classStr + ( isSelectedSort ? ` selected-${order}` : '' )%>
+		<th scope="col" class="<%=c%>">
+			<% const selectedOrder = order === 'ASC' ? 'DESC' : 'ASC' %>
+			<% const o = isSelectedSort ? selectedOrder : defaultOrder%>
+			<a href="/stats/month?monthYear=<%=`${month}-${year}`%>&name=<%=name%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=o%>">
+				<span>
+					<%=title%>
+				</span>
+			</a>
+		</th>
+		<% } %>
+	</tr>
+</thead>

@@ -1,0 +1,25 @@
+<form action="/stats/month" method="GET" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-2">
+	<div class="d-flex">
+		<div class="d-flex align-items-center me-3">
+			<select class="form-select" id="numOfRowPerPage" name="numOfRowPerPage">
+				<option <%= numOfRowPerPage === 15 ? 'selected' : "" %> value="15">15</option>
+				<option <%= numOfRowPerPage === 30 ? 'selected' : "" %> value="30">30</option>
+				<option <%= numOfRowPerPage === 50 ? 'selected' : "" %> value="50">50</option>
+				<option <%= numOfRowPerPage === 100 ? 'selected' : "" %> value="100">100</option>
+			</select>
+			<label class="form-label m-0 ms-2" for="numOfRowPerPage">dòng</label>
+		</div>
+	</div>
+	<div class="btn-toolbar mb-2 mb-md-0">
+		<div class="d-flex">
+			<div class="btn-group me-2">
+				<a href="/stats/month/update?month=<%=month%>&year=<%=year%>&_method=POST" class="btn btn-outline-success">
+					<i class="bi bi-arrow-clockwise"></i>
+				</a>
+			</div>
+			<input value="<%=`${month}-${year}`%>" type="text" class="me-2 form-control month-picker" placeholder="Tháng-Năm" name="monthYear">
+			<input name="name" type="text" class="form-control me-2" placeholder="Tên nhân viên">
+			<button class="btn btn-primary" type="submit">Lọc</button>
+		</div>
+	</div>
+</form>

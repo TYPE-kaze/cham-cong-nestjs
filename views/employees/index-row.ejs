@@ -31,13 +31,13 @@
 	<td>
 		<%=e.dataValues.phone%>
 	</td>
+	<% const { startTime, endTime } = workShifts[e.shift] %>
 	<td>
-		<%= e.startWorkTime %>
+		<span data-bs-toggle="tooltip" data-bs-title="<%=`${startTime}-${endTime}`%>" class="has-tooltip">
+			Ca <%=e.shift%>
+		</span>
 	</td>
-	<td>
-		<%= e.endWorkTime %>
-	</td>
-	<td class="d-flex text-center">
+	<td class=" d-flex text-center">
 		<a type="button" class="btn btn-success me-1" href="/employees/edit/<%=e.dataValues.id%>">
 			<i class="bi bi-pencil-square"></i>
 		</a>

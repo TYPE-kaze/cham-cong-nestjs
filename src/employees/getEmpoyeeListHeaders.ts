@@ -4,7 +4,6 @@ export function getEmpoyeeListHeaders() {
 		{ title: 'Tên', classStr: 'sort', type: 'name' },
 		{ title: 'Email', classStr: 'sort', type: 'email' },
 		{ title: 'SĐT', classStr: 'sort', type: 'phone' },
-		{ title: 'Giờ đi làm', classStr: 'sort', type: 'startWorkTime' },
-		{ title: 'Giờ tan làm', classStr: 'sort', type: 'endWorkTime' },
+		{ title: 'Ca làm', classStr: 'sort', type: 'shift' },
 	]
 }

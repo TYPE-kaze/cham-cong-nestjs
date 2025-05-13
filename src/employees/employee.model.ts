@@ -25,21 +25,15 @@ export class Employee extends Model {
 	@Column
 	phone?: string;
 
+	@Column({
+		type: DataType.CHAR(1),
+		defaultValue: '2',
+	})
+	shift: '1' | '2';
+
 	@HasMany(() => Record)
 	records: Record[]
 
 	@HasMany(() => MonthStat, { onDelete: 'CASCADE' })
 	monthStats: MonthStat[]
-
-	@Column({
-		type: DataType.TIME,
-		allowNull: true,
-	})
-	startWorkTime: string;
-
-	@Column({
-		type: DataType.TIME,
-		allowNull: true,
-	})
-	endWorkTime: string;
 }

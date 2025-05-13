@@ -121,25 +121,29 @@ a.disabled {
 	color: var(--teal-900);
 }
 
-table.employees-list th a {
+table.index th a {
 	text-decoration: none;
 	color: black;
 }
 
-table.employees-list th.sort a span::after {
+table.index th.sort a span::after {
 	cursor: pointer;
 	content: "\f0dc";
 	margin-left: 5px;
 	opacity: 0.6;
 }
 
-table.employees-list th.sort.selected-DESC a span::after {
+table.index th.sort.selected-DESC a span::after {
 	content: "\f0dd";
 	opacity: 0.8;
 }
 
 
-table.employees-list th.sort.selected-ASC a span::after {
+table.index th.sort.selected-ASC a span::after {
 	content: "\f0de";
 	opacity: 0.8;
+}
+
+table.index th.table-index {
+	width: 40px;
 }

@@ -14,6 +14,7 @@ import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
 import { renderDay } from "./renders/day";
 import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
+import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
 
 @Controller('records')
 export class RecordController {
@@ -110,7 +111,7 @@ export class RecordController {
 
 	@Get()
 	@UseGuards(AuthenticatedGuard, CheckerGuard)
-	@UseInterceptors(StoreReturnToInterceptor)
+	@UseInterceptors(StoreBaseUrlToReturnToInterceptor)
 	@Render('records/index')
 	async getIndex(
 		@Query('employeeID') employeeID: string,
@@ -221,7 +222,6 @@ export class RecordController {
 		await this.recordService.updateOne(updateRecordDTO)
 		req.flash('success', `Cập nhật chấm công thành công`)
 		const redirectUrl = req?.session?.returnTo
-		console.log(req.session)
 		if (redirectUrl) {
 			return res.redirect(redirectUrl)
 		}

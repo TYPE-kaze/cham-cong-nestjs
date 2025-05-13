@@ -27,6 +27,12 @@ export class EmployeeService {
 					{ email: { [Op.like]: `%${query}%` } },
 				],
 			}
+
+			let res = /ca? *([12])/.exec(query)
+			if (res) {
+				const shift = res[1]
+				option.where[Op.or].push({ shift })
+			}
 		}
 
 		if (sort) {
@@ -71,8 +77,8 @@ export class EmployeeService {
 	}
 
 	async createOne(createEmployeeDTO: CreateEmployeeDTO) {
-		const { name, email, phone, startWorkTime, endWorkTime } = createEmployeeDTO
-		const employee = new Employee({ name, email, phone, startWorkTime, endWorkTime })
+		const { name, email, phone, shift } = createEmployeeDTO
+		const employee = new Employee({ name, email, phone, shift })
 		return await employee.save()
 	}
 
@@ -80,9 +86,8 @@ export class EmployeeService {
 		const [employee, _] = await this.employeeModel.findOrCreate({
 			where: {
 				name,
-				email: email ? email : name.trim().replace(/\s/g, '_') + '@mail.com',
-				startWorkTime: startWorkTime ? startWorkTime : '08:30:00',
-				endWorkTime: endWorkTime ? endWorkTime : '17:30:00',
+				email: email ? email : name.trim().replace(/\s/g, '_') + '@mobiphone.vn',
+				shift: '2'
 			}
 		})
 		return await employee.save()
@@ -125,9 +130,9 @@ export class EmployeeService {
 		if (employee === null) {
 			throw new Error('id matches no employee')
 		}
-		const { name, email, phone, password } = employee.dataValues
+		const { name, email, phone, password, shift } = employee.dataValues
 		const records = employee.dataValues.records.map(r => r.dataValues)
-		return { id, name, email, phone, password, records }
+		return { id, name, email, phone, password, shift, records }
 	}
 
 	async updateOne(id: UUID, updateEmployeeDTO: CreateEmployeeDTO) {

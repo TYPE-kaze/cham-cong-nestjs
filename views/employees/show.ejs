@@ -7,16 +7,23 @@
 	<main class="container mt-3 mb-3">
 		<%- include("../partials/flash") %>
 		<h1><%=employee.name%> </h1>
-		<div class="mb-3">
-			<h2>Thông tin cá nhân</h2>
-			<ul>
-				<li><b>Tên</b>: <%=employee.name%></li>
-				<li><b>Email</b>: <%=employee.email%></li>
-				<li><b>SĐT</b>: <%=employee.phone%></li>
+		<div>
+			<h2>
+				<span>Thông tin cá nhân</span>
+				<a href="/employees/edit/<%=employee.id%>" class="btn btn-outline-success">
+					<i class="bi bi-pencil-square"></i>
+				</a>
+			</h2>
+			<ul class="row">
+				<div class="col-4">
+					<li><b>Tên</b>: <%=employee.name%></li>
+					<li><b>Email</b>: <%=employee.email%></li>
+				</div>
+				<div class="col-3">
+					<li><b>SĐT</b>: <%=employee.phone%></li>
+					<li><b>Ca làm</b>: <%=employee.shift%></li>
+				</div>
 			</ul>
-			<div>
-				<a href="/employees/edit/<%=employee.id%>" class="btn btn-success">Sửa</a>
-			</div>
 		</div>
 		<h2>Lịch sử đi làm</h2>
 		<form method="GET" action="/employees/<%=id%>" class="row g-3 align-items-center mb-3">
@@ -27,7 +34,6 @@
 					<input min="2000" max="<%=currentYear%>" name="year" value="<%=year%>" type="number" class="form-control year-picker" id="year" placeholder="Năm">
 				</div>
 			</div>
-
 			<div class="col-3">
 				<button type="submit" class="btn btn-primary">Đổi năm</button>
 			</div>

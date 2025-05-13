@@ -17,7 +17,6 @@ export class AuthController {
 		else if (req?.user?.role === 'employee') {
 			defaultRoute = `/employees/${req.user.user.id}`
 		}
-		console.log(req.session)
 		return res.redirect(req?.session?.returnTo ?? req?.session?.returnToOnError ?? defaultRoute)
 	}
 

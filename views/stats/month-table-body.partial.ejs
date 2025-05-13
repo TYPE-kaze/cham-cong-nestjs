@@ -1,0 +1,24 @@
+<tbody>
+	<% for (let i = 0; i < list.length; i++) { %>
+	<% const item = list[i]%>
+	<tr>
+		<td class="text-center">
+			<%=i + 1 + ( ( pageNo - 1 ) * numOfRowPerPage )%>
+		</td>
+		<td>
+			<a href="/employees/<%=item.employee.id%>">
+				<%=item.employee.name%>
+			</a>
+		</td>
+		<td>
+			<%=item.numOfDayLate%>
+		</td>
+		<td>
+			<%=item.numOfDayEarly%>
+		</td>
+		<td>
+			<%=item.numofLE%>
+		</td>
+	</tr>
+	<% } %>
+</tbody>
