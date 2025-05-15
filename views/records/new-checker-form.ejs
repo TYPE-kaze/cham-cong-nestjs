@@ -13,13 +13,23 @@
 		<input class="form-control" type="date" id="date" name="date" required value="<%=date%>">
 	</div>
 	<div class="mb-3 row">
-		<div class="col-6">
+		<div class="col-6 mb-3">
 			<label class="form-label" for="time">Thời điểm đến</label>
 			<input class="form-control" type="time" id="startTime" name="startTime" required>
 		</div>
 		<div class="col-6">
 			<label class="form-label" for="time">Thời điểm về</label>
 			<input class="form-control" type="time" id="endTime" name="endTime" required>
+		</div>
+		<div class="col-7">
+			<label class="form-label" for="status">Trạng thái</label>
+			<select class="form-select" name="status" id="status">
+				<option value="">Mặc định (Suy ra từ thời điểm đến/về)</option>
+				<option value="1">Đủ công</option>
+				<option value="2">Đi muộn</option>
+				<option value="3">Về sớm</option>
+				<option value="4">Cả đi muộn và về sớm</option>
+			</select>
 		</div>
 	</div>
 	<div class="mb-3">

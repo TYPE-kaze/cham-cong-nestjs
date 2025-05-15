@@ -2,21 +2,31 @@
 	<!-- <input class="form-control" type="hidden" name="employeeID" value="<%=employeeID%>">
 	<input class="form-control" type="hidden" name="date" required value="<%=date%>"> -->
 	<div class="mb-3">
-		<label for="">Nhân viên</label>
+		<label class="form-label" for="">Nhân viên</label>
 		<input disabled value="<%=name%>" type="text" class="form-control">
 	</div>
 	<div class="mb-3">
-		<label for="">Ngày</label>
+		<label class="form-label" for="">Ngày</label>
 		<input disabled value="<%=date%>" type="date" class="form-control">
 	</div>
 	<div class="row mb-3">
-		<div class="col-6">
+		<div class="col-6 mb-2">
 			<label class="form-label" for="startTime"> Đến lúc </label>
 			<input disabled class="form-control" type="time" id="startTime" value="<%=startTime%>">
 		</div>
 		<div class="col-6">
 			<label class="form-label" for="endTime"> Tan làm lúc </label>
 			<input disabled class="form-control" type="time" id="endTime" value="<%=endTime%>">
+		</div>
+		<div class="col-6">
+			<label class="form-label" for="status">Trạng thái</label>
+			<% let statusStr %>
+			<% if (status === '') statusStr = 'Không công'  %>
+			<% if (status === '1') statusStr = 'Đủ công'%>
+			<% if (status === '2') statusStr =  'Đi muộn' %>
+			<% if (status === '3') statusStr = 'Về sớm'  %>
+			<% if (status === '4') statusStr = 'Cả đi muộn và về sớm' %>
+			<input id="status" disabled value="<%=statusStr%>" type="text" class="form-control">
 		</div>
 	</div>
 	<div class="mb-3">

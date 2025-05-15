@@ -1,0 +1,30 @@
+<% let monthStr = String(month) %>
+<% if (month < 10) monthStr = '0' + monthStr%>
+<thead>
+	<tr>
+		<% for( let i = 0; i < headers.length; i++ ) { %>
+		<% const { title, classStr, type } = headers[i] %>
+		<% const isSelectedSort = type === sort %>
+		<% const c = classStr + ( isSelectedSort ? ` selected-${order}` : '' )%>
+		<th scope="col" class="<%=c%>">
+			<% isSortable = /sort/.test(classStr) %>
+			<% if (isSortable) { %>
+			<% const selectedOrder = order === 'ASC' ? 'DESC' : 'ASC' %>
+			<% const o = isSelectedSort ? selectedOrder : defaultOrder%>
+			<a href="/employees/<%=employee.id%>/records?monthYear=<%=`${monthStr}-${year}`%>&sort=<%=type%>&order=<%=o%>&filter=<%=filter%>">
+				<% } %>
+				<span>
+					<%=title%>
+				</span>
+				<% if (isSortable) { %>
+			</a>
+			<% } %>
+		</th>
+		<% } %>
+		<% if (user.role === 'checker') { %>
+		<th scope="col" class="" style="width: 80px;">
+			Thao tác
+		</th>
+		<% } %>
+	</tr>
+</thead>

@@ -1,25 +1,26 @@
-<tr>
-	<% for( let index = 0; index < headers.length; index++ ) { %>
-	<% const { title, classStr, type } = headers[index] %>
-	<% if (sort === type) { %>
-	<th class="<%=classStr%> selected-<%=order%>" scope="col">
-		<% const selectedOrder = order === 'ASC' ? 'DESC' : 'ASC' %>
-		<a href="/employees?query=<%=query%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=selectedOrder%>">
-			<span>
-				<%=title%>
-			</span>
-		</a>
-	</th>
-	<% } else { %>
-	<th class="<%=classStr%>" scope="col">
-		<a href="/employees?query=<%=query%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=defaultOrder%>">
-			<span>
-				<%=title%>
-			</span>
-		</a>
-	</th>
-	<% } %>
-	<% } %>
-	<th scope="col" style="width:100px;">Thao tác</th>
-</tr>
+<thead>
+	<tr>
+		<% for( let index = 0; index < headers.length; index++ ) { %>
+		<% const { title, classStr, type } = headers[index] %>
+		<% if (sort === type) { %>
+		<th class="<%=classStr%> selected-<%=order%>" scope="col">
+			<% const selectedOrder = order === 'ASC' ? 'DESC' : 'ASC' %>
+			<a href="/employees?query=<%=query%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=selectedOrder%>">
+				<span>
+					<%=title%>
+				</span>
+			</a>
+		</th>
+		<% } else { %>
+		<th class="<%=classStr%>" scope="col">
+			<a href="/employees?query=<%=query%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=defaultOrder%>">
+				<span>
+					<%=title%>
+				</span>
+			</a>
+		</th>
+		<% } %>
+		<% } %>
+		<th scope="col" style="width:100px;">Thao tác</th>
+	</tr>
 </thead>

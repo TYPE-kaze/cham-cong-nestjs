@@ -1,0 +1,27 @@
+<% let monthStr = String(month) %>
+<% if (month < 10) monthStr = '0' + monthStr%>
+<form action="/employees/<%=employee.id%>/records" method="GET" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-2">
+	<div class="btn-toolbar mb-2 mb-md-0">
+		<div class="d-flex">
+			<input value="<%=`${monthStr}-${year}`%>" type="text" class="me-2 form-control month-picker" placeholder="Tháng-Năm" name="monthYear">
+			<select class="form-select me-2" name="filter" id="filter">
+				<option <%= filter === '0' | filter === '' ? 'selected' : '' %> value="0">Tất cả</option>
+				<option <%= filter === '1' ? 'selected' : '' %> value="1">Không công</option>
+				<option <%= filter === '2' ? 'selected' : '' %> value="2">Đủ công</option>
+				<option <%= filter === '3' ? 'selected' : '' %> value="3">Đi muộn</option>
+				<option <%= filter === '4' ? 'selected' : '' %> value="4">Về sớm</option>
+				<option <%= filter === '5' ? 'selected' : '' %> value="5">Cả đi muộn và về sớm</option>
+			</select>
+			<button class="btn btn-primary" type="submit">Lọc</button>
+		</div>
+	</div>
+</form>
+
+<div class="table-responsive small">
+	<table class="index employees-list table table-bordered">
+		<!-- header -->
+		<%- include('show-records-table-header.partial.ejs'); %>
+		<!-- body -->
+		<%- include('show-records-table-body.partial.ejs'); %>
+	</table>
+</div>

@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString, IsUUID, Matches } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, IsString, IsUUID, Matches } from "class-validator";
 import { UUID } from "crypto";
 import { IsNotFutureDate } from "src/utils/is-not-future-date.decorator";
 
@@ -16,10 +16,12 @@ export class CreateRecordDTO {
 	})
 	date: string;
 
+	@Transform(({ value }) => value === '' ? undefined : value)
 	@Matches(/^([01]?[0-9]|2[0-3]):([0-5]?[0-9])(:([0-5]?[0-9]))?$/, {
 		message: 'Thời điểm đến không hợp lệ',
 	})
-	startTime: string;
+	@IsOptional()
+	startTime?: string;
 
 
 	@Transform(({ value }) => value === '' ? undefined : value)
@@ -29,6 +31,9 @@ export class CreateRecordDTO {
 	})
 	endTime?: string;
 
+	@IsIn(['', '1', '2', '3', '4'])
+	@IsOptional()
+	status?: '' | '1' | '2' | '3' | '4'
 
 	@Transform(({ value }) => value === '' ? undefined : value)
 	@IsOptional()

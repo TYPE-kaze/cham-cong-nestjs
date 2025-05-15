@@ -1,4 +1,4 @@
-<div class="container history">
+<div class="container history heat-map">
 	<% let i = 0; const cellPerRow = 4 %>
 	<% for ( const month of calendar.months ) { %>
 	<% if ( i % cellPerRow === 0) { %>
@@ -30,7 +30,20 @@
 		</div>
 		<% if ( i % cellPerRow === cellPerRow - 1) { %>
 	</div>
+	<% if ( year === currentYear && parseInt(monthNo) >= currentMonth ) break %>
 	<% } %>
 	<% i++ %>
 	<% } %>
 </div>
+<form method="GET" action="/employees/<%=id%>/heat-map" class="row g-3 align-items-center mb-3">
+	<div class="col-3 offset-4">
+		<label class="visually-hidden" for="year">Năm</label>
+		<div class="input-group">
+			<div class="input-group-text">Năm</div>
+			<input min="2000" max="<%=currentYear%>" name="year" value="<%=year%>" type="number" class="form-control year-picker" id="year" placeholder="Năm">
+		</div>
+	</div>
+	<div class="col-3">
+		<button type="submit" class="btn btn-outline-primary">Đổi</button>
+	</div>
+</form>

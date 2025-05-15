@@ -15,7 +15,7 @@
 		<input disabled class="form-control" type="date" id="date" name="date" value="<%=date%>">
 	</div>
 	<div class="mb-3 row">
-		<div class="col-6">
+		<div class="col-6 mb-2">
 			<label class="form-label" for="time">Thời điểm đến</label>
 			<input disabled class="form-control" type="time" id="startTime">
 		</div>
@@ -23,11 +23,15 @@
 			<label class="form-label" for="time">Thời điểm về</label>
 			<input disabled class="form-control" type="time" id="endTime">
 		</div>
+		<div class="col-6">
+			<label class="form-label" for="status">Trạng thái</label>
+			<input id="status" disabled value="Không công" type="text" class="form-control">
+		</div>
 	</div>
 	<div class="mb-3">
 		<label for="reason" class="form-label">Giải trình</label>
 		<textarea class="form-control" name="reason" id="reason" rows="4"></textarea>
 	</div>
-	<button class="btn btn-success" type="submit">Chấm công</button>
+	<button class="btn btn-success" type="submit">Giải trình</button>
 	<a class="btn btn-secondary" href="<%=returnTo%>">Quay lại</a>
 </form>

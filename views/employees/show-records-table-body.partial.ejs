@@ -1,0 +1,50 @@
+<tbody>
+	<% for (let i = 0; i < employee.records.length; i++) { %>
+	<% const r = employee.records[i]%>
+	<tr class="<%=r.isWeekDay ?  '' : 'table-secondary'%>">
+		<td>
+			<% const d = new Date(r.date) %>
+			<% if (d.getTime() <= Date.now()) { %>
+			<a href="/records/<%=r.isNew ? 'new' : 'edit'%>?date=<%=r.date%>&employeeID=<%=employee.id%>">
+				<%=r.date%>
+			</a>
+			<% } else { %>
+			<%=r.date%>
+			<% } %>
+		</td>
+		<td>
+			<% const hasS = !!r.startTime %>
+			<%=hasS ? r.startTime : 'Không có'%>
+		</td>
+		<td>
+			<% const hasE = !!r.endTime %>
+			<%=hasE ? r.endTime : 'Không có'%>
+		</td>
+		<td>
+			<% let statusStr; let status %>
+			<% if (r.isAtWorkLate && r.isLeaveEarly) { statusStr = 'Đi muộn, về sớm'; status = 0 } %>
+			<% if (r.isAtWorkLate && !r.isLeaveEarly) { statusStr = 'Đi muộn'; status = 1 } %>
+			<% if (!r.isAtWorkLate && r.isLeaveEarly) { statusStr = 'Về sớm'; status = 2 } %>
+			<% if (!r.isAtWorkLate && !r.isLeaveEarly) { statusStr = 'Đủ công'; status = 3 } %>
+			<% if (typeof r.isAtWorkLate === 'undefined' && typeof r.isLeaveEarly === 'undefined') { statusStr = 'Không công'; status = 4  } %>
+			<% if (r.isAtWorkLate === null && r.isLeaveEarly === null) { statusStr = 'Không công'; status = 4  } %>
+			<%= r.isWeekDay ? statusStr : 'Nghỉ cuối tuần' %>
+		</td>
+		<td>
+			<%= r.reason %>
+		</td>
+		<% if (user.role === 'checker') { %>
+		<td class="text-center">
+			<% if (status !== 3 && r.isWeekDay) { %>
+			<div class="btn-group btn-group-sm" role="group">
+				<a data-bs-toggle="tooltip" data-bs-title="Chấm đủ công" href="/records/accept?employeeID=<%=r.employeeID%>&date=<%=r.date%>&_method=PATCH" class="<%=status === 3 ? 'disabled' : ''%> has-tooltip btn btn-outline-success">
+					<!-- Đủ công -->
+					<i class="bi bi-check2"></i>
+				</a>
+			</div>
+			<% } %>
+		</td>
+		<% } %>
+	</tr>
+	<% } %>
+</tbody>

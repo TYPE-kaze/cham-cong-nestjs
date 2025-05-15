@@ -13,6 +13,7 @@ import xlsx from 'xlsx'
 import { UpdateReasonDTO } from "./dto/update-one-reason.dto";
 import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 import { workShifts } from "src/constants/work-shift";
+import { AcceptReasonDTO } from "./dto/accept-reason.dto";
 const { read, utils } = xlsx
 const { decode_range, encode_cell } = utils
 
@@ -24,6 +25,15 @@ export class RecordService {
 		@InjectModel(Record) private readonly recordModel: typeof Record
 	) { }
 
+	async acceptReason(acceptReasonDTO: AcceptReasonDTO) {
+		const { date, employeeID } = acceptReasonDTO
+		const [record, _] = await this.recordModel.findOrCreate(
+			{
+				where: { date, employeeID }
+			}
+		)
+		return await record.update({ isAtWorkLate: false, isLeaveEarly: false })
+	}
 	async createOneReason(createOneReasonDTO: CreateOneReasonDTO) {
 		const { employeeID, reason, date } = createOneReasonDTO
 		const record = await this.recordModel.create({ employeeID, reason, date })
@@ -51,26 +61,32 @@ export class RecordService {
 
 		// 3 merge A1:C2 la metadata
 		const merges = worksheet['!merges']
+		let dayRowIndex
 		if (!merges) throw new Error('The worksheet has no merge')
 		const dayIndex: number[] = []
 		for (const m of merges) {
 			const { s, e } = m
 			// hang 0, merge ngang va dai 3 => ngay
-			const isDayMerge = (s.r === 0) && (s.r === e.r) && (e.c - s.c === 2)
+			// const isDayMerge = (s.r === 0) && (s.r === e.r) && (e.c - s.c === 2)
+
+			//merge ngang va dai 3
+			const isDayMerge = (s.r === e.r) && (e.c - s.c === 2)
 			if (isDayMerge) {
+				dayRowIndex ??= s.r
 				dayIndex.push(s.c)
 			}
 		}
 
 		const newRecords: any[] = []
 		const updatedRecords: Record[] = []
+		const firstEmRowIndex = dayRowIndex + 2
 		for (const i of dayIndex) { // tung ngay
-			const dayMonth = worksheet[encode_cell({ c: i, r: 0 })].v
+			const dayMonth = worksheet[encode_cell({ c: i, r: dayRowIndex })].v
 			const [day, month] = dayMonth.split('/')
 			const date = `${year}-${month}-${day}`
 			const employees = {}
 
-			for (let j = 2; j <= rowLastIndex; j++) { // tung nhan vien
+			for (let j = firstEmRowIndex; j <= rowLastIndex; j++) { // tung nhan vien
 				const worktime = worksheet[encode_cell({ c: i + 1, r: j })]?.v
 				if (worktime) {
 					const empName = worksheet[encode_cell({ c: 1, r: j })].v
@@ -227,7 +243,7 @@ export class RecordService {
 	}
 
 	async createOne(createRecordDTO: CreateRecordDTO) {
-		const { employeeID, date, startTime, endTime, reason } = createRecordDTO
+		const { employeeID, date, startTime, endTime, reason, status } = createRecordDTO
 		const employee = await this.employeeService.findOne(employeeID)
 		if (employee === null) {
 			throw new FlashError('id nhân viên không tồn tại')
@@ -237,12 +253,31 @@ export class RecordService {
 			throw new FlashError(`Đã chấm công nhân viên ${employee.dataValues.name} ngày ${date}`)
 		}
 		let isAtWorkLate, isLeaveEarly
-		if (startTime) {
-			isAtWorkLate = this.isEmployeeLate(employee, startTime)
-		}
+		switch (status) {
+			case '1':
+				isAtWorkLate = false
+				isLeaveEarly = false
+				break
+			case "2":
+				isAtWorkLate = true
+				isLeaveEarly = false
+				break
+			case "3":
+				isAtWorkLate = false
+				isLeaveEarly = true
+				break
+			case "4":
+				isAtWorkLate = true
+				isLeaveEarly = true
+				break
+			default:
+				if (startTime) {
+					isAtWorkLate = this.isEmployeeLate(employee, startTime)
+				}
 
-		if (endTime && startTime) {
-			isLeaveEarly = this.isEmployeeLeaveEarly(employee, startTime, endTime)
+				if (endTime && startTime) {
+					isLeaveEarly = this.isEmployeeLeaveEarly(employee, startTime, endTime)
+				}
 		}
 
 		const record = await (new this.recordModel({ date, startTime, endTime, employeeID, isAtWorkLate, isLeaveEarly, reason })).save()
@@ -250,24 +285,44 @@ export class RecordService {
 	}
 
 	async updateOne(updateEmployeeDTO: CreateRecordDTO) {
-		const { employeeID, date, startTime, endTime, reason } = updateEmployeeDTO
+		const { employeeID, date, startTime, endTime, reason, status } = updateEmployeeDTO
 		let record = await this.recordModel.findOne(
 			{
 				where: { employeeID, date },
 				include: [Employee]
 			})
 		if (record === null) {
-			throw new FlashError('Không tìm thấy bản ghi')
+			throw new Error('Found no record')
 		}
 
 		let isAtWorkLate, isLeaveEarly
-		if (startTime) {
-			isAtWorkLate = this.isEmployeeLate(record.employee, startTime)
+		switch (status) {
+			case '1':
+				isAtWorkLate = false
+				isLeaveEarly = false
+				break
+			case "2":
+				isAtWorkLate = true
+				isLeaveEarly = false
+				break
+			case "3":
+				isAtWorkLate = false
+				isLeaveEarly = true
+				break
+			case "4":
+				isAtWorkLate = true
+				isLeaveEarly = true
+				break
+			default:
+				if (startTime) {
+					isAtWorkLate = this.isEmployeeLate(record.employee, startTime)
+				}
+
+				if (endTime && startTime) {
+					isLeaveEarly = this.isEmployeeLeaveEarly(record.employee, startTime, endTime)
+				}
 		}
 
-		if (endTime && startTime) {
-			isLeaveEarly = this.isEmployeeLeaveEarly(record.employee, startTime, endTime)
-		}
 		record = await record.update({ startTime, endTime, isAtWorkLate, isLeaveEarly, reason })
 		return record
 	}

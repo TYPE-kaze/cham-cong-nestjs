@@ -10,6 +10,7 @@ import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
 import { GetMonthQueryDTO } from "./dto/get-month-query.dto";
 import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
 import { headers } from "./constants/month-table-headers";
+import { StoreBaseUrlToReturnToOnErrorInterceptor } from "src/store-base-url-to-return-to-on-error.interceptor";
 
 @UseGuards(AuthenticatedGuard, CheckerGuard)
 @Controller('stats')
@@ -81,7 +82,7 @@ export class StatisticController {
 
 	@Get('month')
 	@Render('stats/month')
-	@UseInterceptors(StoreBaseUrlToReturnToInterceptor)
+	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	async getStatByMonth(
 		@Query() getMonthQueryDTO: GetMonthQueryDTO
 	) {

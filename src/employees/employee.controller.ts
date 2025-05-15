@@ -14,6 +14,9 @@ import { GetIndexQueryDTO } from "./dto/get-index-query.dto";
 import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
 import { getEmpoyeeListHeaders } from "./getEmpoyeeListHeaders";
 import { workShifts } from "src/constants/work-shift";
+import { ShowRecordsDTO } from "./dto/show-records.dto";
+import { showRecordsHeaders } from "src/constants/show-records-table-headers.const";
+import { StoreBaseUrlToReturnToOnErrorInterceptor } from "src/store-base-url-to-return-to-on-error.interceptor";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -21,7 +24,7 @@ export class EmployeeController {
 	constructor(private employeeService: EmployeeService) { }
 	@Get()
 	@UseGuards(CheckerGuard)
-	@UseInterceptors(StoreBaseUrlToReturnToInterceptor)
+	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	@Render('employees/index')
 	async getIndex(
 		@Query() getIndexQueryDTO: GetIndexQueryDTO
@@ -48,15 +51,17 @@ export class EmployeeController {
 		return { workShifts }
 	}
 
-	@Get(':id')
-	@UseInterceptors(StoreReturnToInterceptor)
+	@Get(':id/heat-map')
+	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	@Render('employees/show')
-	async showOne(
+	async showEmployeeHeatMapTab(
 		@Req() req,
 		@Param('id', ParseUUIDPipe) id: UUID,
 		@Query('year') year?: string,
 	) {
-		const currentYear = new Date().getFullYear()
+		const now = new Date()
+		const currentYear = now.getFullYear()
+		const currentMonth = now.getMonth() + 1
 		let yearNum = currentYear
 		if (year && year !== '') {
 			yearNum = parseInt(year)
@@ -66,7 +71,78 @@ export class EmployeeController {
 		}
 		const employee = await this.employeeService.getOneWithRecords(id, yearNum)
 		const calendar = renderYearCalendar(yearNum, employee.records, id)
-		return { returnTo: req.session.returnTo, employee, calendar, year: yearNum, id, currentYear }
+		return {
+			tab: 'heat-map',
+			employee,
+			calendar,
+			year: yearNum,
+			id,
+			currentYear,
+			currentMonth
+		}
+	}
+
+	@Get(':id/records')
+	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
+	@Render('employees/show')
+	async showEmployeeRecordTab(
+		@Param('id', ParseUUIDPipe) id: UUID,
+		@Query() showRecordsDTO: ShowRecordsDTO
+	) {
+		const { monthYear, order, sort, filter } = showRecordsDTO
+		const now = new Date()
+		const curMonth = now.getMonth() + 1
+		const curYear = now.getFullYear()
+		let month: number, year: number
+		if (monthYear) {
+			[month, year] = monthYear.split('-').map((e) => parseInt(e))
+		} else {
+			month = curMonth
+			year = curYear
+		}
+		const employee = await this.employeeService.getOneWithRecordsInOneMonth(id, month, year, sort, order, filter)
+		const stat = {
+			isAtWorkLate: 0,
+			isLeaveEarly: 0,
+			isBoth: 0,
+			isOk: 0,
+			isNotWork: 0
+		}
+		for (const record of employee.records) {
+			const { isAtWorkLate, isLeaveEarly } = record
+			if (typeof isAtWorkLate === 'undefined' && typeof isLeaveEarly === 'undefined') {
+				stat.isNotWork += 1
+			} else if (isAtWorkLate === null && isLeaveEarly === null) {
+				stat.isNotWork += 1
+			} else if (isAtWorkLate && isLeaveEarly) {
+				stat.isBoth += 1
+				stat.isAtWorkLate += 1
+				stat.isLeaveEarly += 1
+			} else if (isLeaveEarly && !isAtWorkLate) {
+				stat.isLeaveEarly += 1
+			} else if (isAtWorkLate && !isLeaveEarly) {
+				stat.isAtWorkLate += 1
+			} else if (!isAtWorkLate && !isLeaveEarly) {
+				stat.isOk += 1
+			}
+		}
+		const defaultOrder = 'ASC'
+		return {
+			tab: 'records', employee, month, year, curMonth, curYear, headers: showRecordsHeaders,
+			order: order ?? defaultOrder,
+			sort: sort ?? 'date',
+			defaultOrder,
+			filter: filter ?? '0',
+			stat
+		}
+	}
+
+	@Get(':id')
+	showOne(
+		@Res() res: Response,
+		@Param('id', ParseUUIDPipe) id: UUID
+	) {
+		res.redirect(`/employees/${id}/records`)
 	}
 
 	@Get('edit/:id')

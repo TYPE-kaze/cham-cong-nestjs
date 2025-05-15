@@ -135,6 +135,110 @@ export class EmployeeService {
 		return { id, name, email, phone, password, shift, records }
 	}
 
+	async getOneWithRecordsInOneMonth(id: UUID, month: number, year: number, sort = 'date', order = 'ASC', filter = '0') {
+		const employee = await this.employeeModel.findOne(
+			{
+				where: { id },
+				include: [{
+					model: Record,
+					required: false,
+					where: {
+						[Op.and]: [
+							literal(`YEAR(date) = ${year}`),
+							literal(`MONTH(date) = ${month}`),
+						]
+					},
+				}],
+				order: [[{ model: Record, as: 'records' }, 'date', 'ASC']], //sq-ts quirk!
+			}
+		)
+		if (employee === null) {
+			throw new Error('id matches no employee')
+		}
+		const date = new Date(year, month - 1, 1, 0, 0, 0);
+		let records: any = []
+		let i = 0
+		while (date.getMonth() === month - 1) {
+			// each loop would give a date
+			const yyyy = date.getFullYear();
+			const mm = String(date.getMonth() + 1).padStart(2, '0')
+			const dd = String(date.getDate()).padStart(2, '0');
+			const dateStr = `${yyyy}-${mm}-${dd}`
+			const dayOfWeek = date.getDay()
+
+			if (employee.records.length > 0 && i < employee.records.length && dateStr === employee.records[i].date) {
+				records.push(employee.records[i])
+				i++
+			} else {
+				records.push({
+					employeeID: id,
+					date: dateStr,
+					isNew: true,
+					isWeekDay: dayOfWeek >= 1 && dayOfWeek <= 5,
+				})
+			}
+			date.setDate(date.getDate() + 1);
+		}
+
+		switch (filter) {
+			case '1':
+				records = records.filter((r) => {
+					const { isAtWorkLate, isLeaveEarly } = r
+					return typeof isAtWorkLate === 'undefined'
+						&& typeof isLeaveEarly === 'undefined'
+				})
+				break
+			case '2':
+				records = records.filter((r) => {
+					const { isAtWorkLate, isLeaveEarly } = r
+					return !isAtWorkLate && !isLeaveEarly
+						&& typeof isAtWorkLate !== 'undefined'
+						&& typeof isLeaveEarly !== 'undefined'
+				})
+				break
+			case '3':
+				records = records.filter((r) => {
+					const { isAtWorkLate, isLeaveEarly } = r
+					return isAtWorkLate && !isLeaveEarly
+				})
+				break
+			case '4':
+				records = records.filter((r) => {
+					const { isAtWorkLate, isLeaveEarly } = r
+					return !isAtWorkLate && isLeaveEarly
+				})
+			case '5':
+				records = records.filter((r) => {
+					const { isAtWorkLate, isLeaveEarly } = r
+					return isAtWorkLate && isLeaveEarly
+				})
+			default:
+				break
+
+		}
+
+		//Sort
+		if (sort === 'reason') {
+			let hasUpdateded = records.filter((r) => !!r.reasonUpdatedAt)
+			const other = records.filter((r) => !r.reasonUpdatedAt)
+			hasUpdateded = hasUpdateded.sort((a, b) => {
+				const aDate = new Date(a.reasonUpdatedAt)
+				const bDate = new Date(b.reasonUpdatedAt)
+				if (order === 'DESC') {
+					return bDate.getTime() - aDate.getTime()
+				} else {
+					return aDate.getTime() - bDate.getTime()
+				}
+			})
+			records = [...hasUpdateded, ...other]
+		} else {
+			if (order === 'DESC') records = records.reverse()
+		}
+
+		employee.records = records
+		return employee
+	}
+
 	async updateOne(id: UUID, updateEmployeeDTO: CreateEmployeeDTO) {
 		let employee = await this.employeeModel.findOne({ where: { id } })
 		if (employee === null) {

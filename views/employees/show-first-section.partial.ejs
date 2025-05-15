@@ -1,0 +1,50 @@
+<% const isRecordTab = tab === 'records' %>
+<% const isHeatMapTab = tab === 'heat-map' %>
+<div class="row">
+	<div class="col-6">
+		<h2>
+			<span>Thông tin cá nhân</span>
+			<a href="/employees/edit/<%=employee.id%>" class="btn btn-outline-success">
+				<i class="bi bi-pencil-square"></i>
+			</a>
+		</h2>
+		<ul class="row list-unstyled">
+			<div class="col-8">
+				<li><b>Tên</b>: <%=employee.name%></li>
+				<li><b>Email</b>: <%=employee.email%></li>
+			</div>
+			<div class="col-4">
+				<li><b>SĐT</b>: <%=employee.phone%></li>
+				<li><b>Ca làm</b>: <%=employee.shift%></li>
+			</div>
+		</ul>
+	</div>
+	<div class="col-6">
+		<h2>
+			Thống kê
+		</h2>
+		<!-- const stat = {
+			isAtWorkLate: 0,
+			isLeaveEarly: 0,
+			isBoth: 0,
+			isOk: 0,
+			isNotWork: 0
+		} -->
+		<% if (isRecordTab) { %>
+		<ul class="row list-unstyled">
+			<div class="col-3">
+				<li><b>Đi muộn</b>: <%=stat.isAtWorkLate%> </li>
+				<li><b>Về sớm</b>: <%=stat.isLeaveEarly%> </li>
+			</div>
+			<div class="col-3">
+				<li><b>Cả hai</b>: <%=stat.isLeaveEarly%> </li>
+			</div>
+			<div class="col-3">
+				<li><b>Đủ công</b>: <%=stat.isOk%></li>
+				<li><b>Không công</b>: <%=stat.isNotWork%></li>
+			</div>
+		</ul>
+
+		<% } %>
+	</div>
+</div>

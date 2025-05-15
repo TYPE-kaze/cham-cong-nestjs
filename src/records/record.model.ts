@@ -1,5 +1,5 @@
 import { UUID } from 'node:crypto';
-import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo, AllowNull } from 'sequelize-typescript';
+import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo, AllowNull, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { Employee } from 'src/employees/employee.model';
 
 @Table({ tableName: "records" })
@@ -35,17 +35,37 @@ export class Record extends Model {
 		type: DataType.BOOLEAN,
 		allowNull: true
 	})
-	isAtWorkLate: boolean
+	isAtWorkLate?: boolean
 
 	@Column({
 		type: DataType.BOOLEAN,
 		allowNull: true
 	})
-	isLeaveEarly: boolean
+	isLeaveEarly?: boolean
 
 	@Column({
 		type: DataType.STRING,
 		allowNull: true
 	})
-	reason: string
+	reason?: string
+
+	@Column({
+		type: DataType.DATE,
+		allowNull: true,
+	})
+	reasonUpdatedAt: Date;
+
+	@BeforeUpdate
+	static updateNameTimestamp(instance: Record) {
+		if (instance.changed('reason')) {
+			instance.reasonUpdatedAt = new Date();
+		}
+	}
+
+	// 👇 Virtual property (not stored in DB)
+	get isWeekDay(): boolean {
+		const d = new Date(this.date)
+		const day = d.getDay(); // 0 (Sun) to 6 (Sat)
+		return day >= 1 && day <= 5; // Mon–Fri
+	}
 }

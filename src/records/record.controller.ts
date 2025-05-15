@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Redirect, Render, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, ParseIntPipe, ParseUUIDPipe, Patch, Post, Put, Query, Redirect, Render, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { RecordService } from "./record.service";
 import { EmployeeService } from "src/employees/employee.service";
 import { CreateRecordDTO } from "./dto/create-record.dto";
@@ -15,6 +15,7 @@ import { StoreReturnToInterceptor } from "src/store-return-to.interceptor";
 import { renderDay } from "./renders/day";
 import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
 import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
+import { AcceptReasonDTO } from "./dto/accept-reason.dto";
 
 @Controller('records')
 export class RecordController {
@@ -175,10 +176,25 @@ export class RecordController {
 		const date = getEditFormDTO.date
 		const employeeID = getEditFormDTO.employeeID
 		const record = await this.recordService.findOne(date, employeeID)
-		const { startTime, endTime, reason } = record.dataValues
+		const { startTime, endTime, reason, isAtWorkLate, isLeaveEarly } = record
 		const isChecker = req.user.role === 'checker'
 		const returnTo = req.session.returnTo
-		return { returnTo, isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
+		let status = ''
+		if (typeof isAtWorkLate === "boolean" && typeof isLeaveEarly === "boolean") {
+			if (!isAtWorkLate && !isLeaveEarly) {
+				status = '1'
+			}
+			if (isAtWorkLate && !isLeaveEarly) {
+				status = '2'
+			}
+			if (!isAtWorkLate && isLeaveEarly) {
+				status = '3'
+			}
+			if (isAtWorkLate && isLeaveEarly) {
+				status = '4'
+			}
+		}
+		return { status, returnTo, isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
 	}
 
 	@Post()
@@ -241,6 +257,10 @@ export class RecordController {
 		if (!date || date === '' || ! /^\d{4}-\d{2}-\d{2}$/.test(date)) {
 			throw new FlashError('date is not valid')
 		}
+
+		const d = new Date(date)
+		const curDate = new Date()
+		if (d > curDate) throw new FlashError('Không thể giải trình một ngày trong tương lai')
 		await this.recordService.updateOneReason(employeeID, date, updateReasonDTO)
 
 		req.flash('success', `Cập nhật giải trình thành công`)
@@ -248,6 +268,18 @@ export class RecordController {
 		if (redirectUrl) {
 			return res.redirect(redirectUrl)
 		}
-		return res.redirect('/records/day')
+		return res.redirect('/records/month')
+	}
+
+	@UseGuards(AuthenticatedGuard, CheckerGuard)
+	@Patch('accept')
+	async acceptReason(
+		@Res() res,
+		@Req() req,
+		@Query() acceptReasonDTO: AcceptReasonDTO
+	) {
+		await this.recordService.acceptReason(acceptReasonDTO)
+		req.flash('success', `Cập nhật chấm công thành công`)
+		return res.redirect(req?.session?.returnTo ?? '/records/month')
 	}
 }
