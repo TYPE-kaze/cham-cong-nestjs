@@ -15,7 +15,7 @@ import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.in
 import { getEmpoyeeListHeaders } from "./getEmpoyeeListHeaders";
 import { workShifts } from "src/constants/work-shift";
 import { ShowRecordsDTO } from "./dto/show-records.dto";
-import { showRecordsHeaders } from "src/constants/show-records-table-headers.const";
+import { showRecordsHeaders } from "src/employees/constants/show-records-table-headers.const";
 import { StoreBaseUrlToReturnToOnErrorInterceptor } from "src/store-base-url-to-return-to-on-error.interceptor";
 
 @Controller('employees')
