@@ -62,10 +62,51 @@ export class Record extends Model {
 		}
 	}
 
-	// 👇 Virtual property (not stored in DB)
 	get isWeekDay(): boolean {
 		const d = new Date(this.date)
 		const day = d.getDay(); // 0 (Sun) to 6 (Sat)
 		return day >= 1 && day <= 5; // Mon–Fri
+	}
+
+	get isLate(): boolean {
+		if (typeof this.isAtWorkLate === 'boolean') {
+			if (this.isAtWorkLate) return true
+		}
+		return false
+	}
+
+	get isEarly(): boolean {
+		if (typeof this.isLeaveEarly === 'boolean') {
+			if (this.isLeaveEarly) return true
+		}
+		return false
+	}
+
+	get isBoth(): boolean {
+		if (typeof this.isAtWorkLate === 'boolean' && typeof this.isLeaveEarly === 'boolean') {
+			if (this.isAtWorkLate && this.isLeaveEarly) return true
+		}
+		return false
+	}
+
+	get isNotWork(): boolean {
+		return (
+			(typeof this.isAtWorkLate === 'undefined' && typeof this.isLeaveEarly === 'undefined')
+			|| (this.isAtWorkLate === null && this.isLeaveEarly === null)
+		) && this.isWeekDay
+	}
+
+	get isOk(): boolean {
+		if (typeof this.isAtWorkLate === 'boolean' && typeof this.isLeaveEarly === 'boolean') {
+			if (!this.isAtWorkLate && !this.isLeaveEarly) return true
+		}
+		return false
+	}
+
+	get isStatusUnset(): boolean {
+		return (
+			(typeof this.isAtWorkLate === 'undefined' && typeof this.isLeaveEarly === 'undefined')
+			|| (this.isAtWorkLate === null && this.isLeaveEarly === null)
+		)
 	}
 }

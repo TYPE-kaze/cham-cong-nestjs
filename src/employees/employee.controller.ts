@@ -100,32 +100,7 @@ export class EmployeeController {
 			month = curMonth
 			year = curYear
 		}
-		const employee = await this.employeeService.getOneWithRecordsInOneMonth(id, month, year, sort, order, filter)
-		const stat = {
-			isAtWorkLate: 0,
-			isLeaveEarly: 0,
-			isBoth: 0,
-			isOk: 0,
-			isNotWork: 0
-		}
-		for (const record of employee.records) {
-			const { isAtWorkLate, isLeaveEarly } = record
-			if (typeof isAtWorkLate === 'undefined' && typeof isLeaveEarly === 'undefined') {
-				stat.isNotWork += 1
-			} else if (isAtWorkLate === null && isLeaveEarly === null) {
-				stat.isNotWork += 1
-			} else if (isAtWorkLate && isLeaveEarly) {
-				stat.isBoth += 1
-				stat.isAtWorkLate += 1
-				stat.isLeaveEarly += 1
-			} else if (isLeaveEarly && !isAtWorkLate) {
-				stat.isLeaveEarly += 1
-			} else if (isAtWorkLate && !isLeaveEarly) {
-				stat.isAtWorkLate += 1
-			} else if (!isAtWorkLate && !isLeaveEarly) {
-				stat.isOk += 1
-			}
-		}
+		const [employee, stat] = await this.employeeService.getOneWithRecordsInOneMonth(id, month, year, sort, order, filter)
 		const defaultOrder = 'ASC'
 		return {
 			tab: 'records', employee, month, year, curMonth, curYear, headers: showRecordsHeaders,

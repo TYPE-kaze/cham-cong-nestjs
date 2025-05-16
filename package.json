@@ -22,7 +22,6 @@
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.1",
 		"connect-flash": "^0.1.1",
-		"date-holidays": "^3.24.3",
 		"ejs": "^3.1.10",
 		"express-session": "^1.18.1",
 		"mariadb": "^3.4.1",

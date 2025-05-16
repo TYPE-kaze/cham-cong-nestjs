@@ -156,7 +156,7 @@ export class EmployeeService {
 			throw new Error('id matches no employee')
 		}
 		const date = new Date(year, month - 1, 1, 0, 0, 0);
-		let records: any = []
+		let records: Record[] = []
 		let i = 0
 		while (date.getMonth() === month - 1) {
 			// each loop would give a date
@@ -164,54 +164,53 @@ export class EmployeeService {
 			const mm = String(date.getMonth() + 1).padStart(2, '0')
 			const dd = String(date.getDate()).padStart(2, '0');
 			const dateStr = `${yyyy}-${mm}-${dd}`
-			const dayOfWeek = date.getDay()
 
 			if (employee.records.length > 0 && i < employee.records.length && dateStr === employee.records[i].date) {
 				records.push(employee.records[i])
 				i++
 			} else {
-				records.push({
+				const newRecord = new Record({
 					employeeID: id,
 					date: dateStr,
-					isNew: true,
-					isWeekDay: dayOfWeek >= 1 && dayOfWeek <= 5,
 				})
+				records.push(newRecord)
 			}
 			date.setDate(date.getDate() + 1);
 		}
 
+		//collect stats of the month
+		const stat = {
+			isAtWorkLate: 0,
+			isLeaveEarly: 0,
+			isBoth: 0,
+			isOk: 0,
+			isNotWork: 0
+		}
+		for (const record of records) {
+			const { isLate, isEarly, isBoth, isNotWork, isOk } = record
+			if (isLate) stat.isAtWorkLate += 1
+			if (isEarly) stat.isLeaveEarly += 1
+			if (isBoth) stat.isBoth += 1
+			if (isNotWork) stat.isNotWork += 1
+			if (isOk) stat.isOk += 1
+		}
+
 		switch (filter) {
 			case '1':
-				records = records.filter((r) => {
-					const { isAtWorkLate, isLeaveEarly } = r
-					return typeof isAtWorkLate === 'undefined'
-						&& typeof isLeaveEarly === 'undefined'
-				})
+				records = records.filter((r) => r.isNotWork)
 				break
 			case '2':
-				records = records.filter((r) => {
-					const { isAtWorkLate, isLeaveEarly } = r
-					return !isAtWorkLate && !isLeaveEarly
-						&& typeof isAtWorkLate !== 'undefined'
-						&& typeof isLeaveEarly !== 'undefined'
-				})
+				records = records.filter((r) => r.isOk)
 				break
 			case '3':
-				records = records.filter((r) => {
-					const { isAtWorkLate, isLeaveEarly } = r
-					return isAtWorkLate && !isLeaveEarly
-				})
+				records = records.filter((r) => r.isLate)
 				break
 			case '4':
-				records = records.filter((r) => {
-					const { isAtWorkLate, isLeaveEarly } = r
-					return !isAtWorkLate && isLeaveEarly
-				})
+				records = records.filter((r) => r.isEarly)
+				break
 			case '5':
-				records = records.filter((r) => {
-					const { isAtWorkLate, isLeaveEarly } = r
-					return isAtWorkLate && isLeaveEarly
-				})
+				records = records.filter((r) => r.isBoth)
+				break
 			default:
 				break
 
@@ -236,7 +235,7 @@ export class EmployeeService {
 		}
 
 		employee.records = records
-		return employee
+		return [employee, stat] as const
 	}
 
 	async updateOne(id: UUID, updateEmployeeDTO: CreateEmployeeDTO) {
