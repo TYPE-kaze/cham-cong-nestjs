@@ -35,8 +35,12 @@ async function bootstrap() {
 
 	app.use((req, res: Response, next) => {
 		//flash from session storage
-		res.locals.success = req.flash('success')
-		res.locals.error = req.flash('error')
+		if (req.baseUrl === '/') {
+			// dont flash
+		} else {
+			res.locals.success = req.flash('success')
+			res.locals.error = req.flash('error')
+		}
 		res.locals.user = req.user
 		res.locals.returnTo = req?.session?.returnTo
 		next()

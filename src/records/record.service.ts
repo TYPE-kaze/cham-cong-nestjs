@@ -142,6 +142,7 @@ export class RecordService {
 			: await this.recordModel.bulkCreate(newRecords)
 		return [addedRecords.length, updatedRecords.length]
 	}
+
 	async checkoutEmployee(employeeID: UUID, date: string) {
 		const record = await this.recordModel.findOne({ where: { employeeID, date } })
 		if (record === null || !record.startTime) {

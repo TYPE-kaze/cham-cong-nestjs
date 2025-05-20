@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post
 import { LocalAuthGuard } from "./local-auth.guard";
 import { AuthenticatedGuard } from "./authenticated.guard";
 import { Request, Response } from "express";
-import { CheckerGuard } from "./checker.guard";
 
 @Controller()
 export class AuthController {
@@ -12,7 +11,7 @@ export class AuthController {
 		req.flash('success', 'Đăng nhập thành công')
 		let defaultRoute
 		if (req?.user?.role === 'checker') {
-			defaultRoute = '/records/day'
+			defaultRoute = '/stats/month'
 		}
 		else if (req?.user?.role === 'employee') {
 			defaultRoute = `/employees/${req.user.user.id}`
@@ -31,11 +30,5 @@ export class AuthController {
 		return new Promise((resolve, reject) => {
 			req.logout((err) => resolve(err))
 		})
-	}
-
-	@Get('checker') // DEBUG
-	@UseGuards(AuthenticatedGuard, CheckerGuard)
-	testGuard() {
-		return 'Hello from checker'
 	}
 }

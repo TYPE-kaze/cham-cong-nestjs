@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, UnauthorizedException } from "@nestjs/common";
 import { Request, Response } from "express";
 import { NotAuthenticatedException } from "./auth/not-authenticated.exception";
 import { WrongCredentialException } from "./auth/wrong-credential.exception";
@@ -27,7 +27,7 @@ export class CustomErrorFilter implements ExceptionFilter {
 			return response.redirect('/login')
 		}
 
-		if (exception instanceof WrongCredentialException) {
+		if (exception instanceof WrongCredentialException || exception instanceof UnauthorizedException) {
 			const msg = `${new Date().toISOString()} ${exception.name}: ${exception.message}\n`
 			log.write(msg)
 			request.flash('error', 'Sai hoặc không tồn tại thông tin đăng nhập')

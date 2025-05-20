@@ -6,8 +6,8 @@ export class AppController {
 	constructor() { }
 	@Get()
 	@UseGuards(AuthenticatedGuard)
-	@Render('index')
-	index() { }
+	@Redirect('/stats/month')
+	homepage() { }
 
 	@Get('back')
 	returnToPreviousPage(

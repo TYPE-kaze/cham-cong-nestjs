@@ -33,7 +33,7 @@ export class StatisticService {
 
 		const option: any = {
 			where: { month, year },
-			include: [{ model: Employee, required: false }]
+			include: [{ model: Employee, required: true }]
 		}
 		if (name) {
 			option.include[0].where = { name: { [Op.like]: `%${name}%` } }

@@ -27,8 +27,10 @@ export class EmployeeController {
 	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	@Render('employees/index')
 	async getIndex(
-		@Query() getIndexQueryDTO: GetIndexQueryDTO
+		@Query() getIndexQueryDTO: GetIndexQueryDTO,
+		@Req() req
 	) {
+		console.log(req.session)
 		const { query, sort, order } = getIndexQueryDTO
 		const numOfRowPerPage = getIndexQueryDTO.numOfRowPerPage
 			? parseInt(getIndexQueryDTO.numOfRowPerPage)
@@ -147,7 +149,7 @@ export class EmployeeController {
 	) {
 		const { password, passwordOld } = body
 		await this.employeeService.changePassword(id, passwordOld, password)
-		req.flash('suceess', 'Đổi mật khẩu thành công')
+		req.flash('success', 'Đổi mật khẩu thành công')
 		return res.redirect(req?.session?.returnTo ?? `/employees/${id}`)
 	}
 
