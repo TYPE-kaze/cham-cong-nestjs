@@ -109,4 +109,36 @@ export class Record extends Model {
 			|| (this.isAtWorkLate === null && this.isLeaveEarly === null)
 		)
 	}
+
+	get status() {
+		if (this.isBoth) return 'bo'
+		if (this.isLate) return 'la'
+		if (this.isEarly) return 'ea'
+		if (this.isOk) return 'ok'
+		if (this.isNotWork) return 'no'
+		if (!this.isWeekDay) return 'wk'
+		return 'uk'
+	}
+
+	get statusText() {
+		switch (this.status) {
+			case 'la':
+				return 'Đi muộn'
+			case 'ea':
+				return 'Về sớm'
+			case 'bo':
+				return 'Cả hai'
+			case 'ok':
+				return 'Đủ công'
+			case 'no':
+				return 'Không công'
+			case 'wk':
+				return 'Cuối tuần'
+			case 'uk':
+				return ''
+			default:
+				return ''
+		}
+
+	}
 }

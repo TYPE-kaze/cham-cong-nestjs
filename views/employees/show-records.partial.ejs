@@ -4,6 +4,7 @@
 	<div class="btn-toolbar mb-2 mb-md-0">
 		<div class="d-flex">
 			<input value="<%=`${monthStr}-${year}`%>" type="text" class="me-2 form-control month-picker" placeholder="Tháng-Năm" name="monthYear">
+			<input type="hidden" name="h_year" value="<%=h_year%>">
 			<select class="form-select me-2" name="filter" id="filter">
 				<option <%= filter === '0' | filter === '' ? 'selected' : '' %> value="0">Tất cả</option>
 				<option <%= filter === '1' ? 'selected' : '' %> value="1">Không công</option>

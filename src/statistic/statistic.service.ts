@@ -66,35 +66,37 @@ export class StatisticService {
 		return await this.monthStatModel.destroy({ where: { employeeID } })
 	}
 
-	async updateMonthStatBaseOnRecord(month: string, year: string) {
-		const employees = await this.employeeService.getAll()
-		for (const e of employees) {
-			const records = await this.recordService.findByMonthYearAndEmployeeID(month, year, e.id)
-			let numOfDayLate = 0, numOfDayEarly = 0, numofLE = 0
-			for (const r of records) {
-				if (r.isAtWorkLate) {
-					numOfDayLate++
-				}
-
-				if (r.isLeaveEarly) {
-					numOfDayEarly++
-				}
-
-				if (r.isAtWorkLate && r.isLeaveEarly) {
-					numofLE++
-				}
+	async updateMonthStatBaseOnRecord(month: number, year: number) {
+		const records = await this.recordService.findByMonth(month, year)
+		const t = {}
+		for (const r of records) {
+			t[r.employeeID] ??= {
+				numOfDayLate: 0,
+				numOfDayEarly: 0,
+				numofLE: 0
 			}
 
-			let [m_stat, res] = await this.monthStatModel.findOrCreate(
+			if (r.isLate) {
+				t[r.employeeID].numOfDayLate++
+			}
+
+			if (r.isEarly) {
+				t[r.employeeID].numOfDayEarly++
+			}
+
+			if (r.isBoth) {
+				t[r.employeeID].numofLE++
+			}
+		}
+
+		console.log(t)
+		for (const employeeID in t) {
+			const [m_stat, _] = await this.monthStatModel.findOrCreate(
 				{
-					where: {
-						month,
-						year,
-						employeeID: e.id
-					}
+					where: { month, year, employeeID }
 				}
 			)
-			await m_stat.update({ numOfDayEarly, numOfDayLate, numofLE })
+			await m_stat.update(t[employeeID])
 		}
 	}
 }

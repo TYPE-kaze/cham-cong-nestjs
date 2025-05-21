@@ -130,9 +130,7 @@ export class EmployeeService {
 		if (employee === null) {
 			throw new Error('id matches no employee')
 		}
-		const { name, email, phone, password, shift } = employee.dataValues
-		const records = employee.dataValues.records.map(r => r.dataValues)
-		return { id, name, email, phone, password, shift, records }
+		return employee
 	}
 
 	async getOneWithRecordsInOneMonth(id: UUID, month: number, year: number, sort = 'date', order = 'ASC', filter = '0') {

@@ -337,18 +337,13 @@ export class RecordService {
 		return await record.destroy()
 	}
 
-	async findByMonthYearAndEmployeeID(month: string, year: string, employeeID: UUID) {
+	async findByMonth(month: number, year: number) {
 		const conditions: any[] = []
-		const m = parseInt(month);
 		conditions.push(literal(`Month(date) = ${month}`))
-		const y = parseInt(year);
 		conditions.push(literal(`YEAR(date) = ${year}`))
 
-		const where = { [Op.and]: conditions, employeeID }
-		const records = await this.recordModel.findAll({
-			where,
-			include: [Employee]
-		})
+		const where = { [Op.and]: conditions }
+		const records = await this.recordModel.findAll({ where })
 		return records
 	}
 

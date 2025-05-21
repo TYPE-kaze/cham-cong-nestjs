@@ -6,11 +6,11 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 		year,
 		months: [] as any[]
 	};
-	let recordC = 0
 
+	let isFuture = false
+	let r_count = 0
 	for (let month = 0; month < 12; month++) {
 		const date = new Date(year, month, 1, 0, 0, 0);
-		const isFuture = date > new Date()
 		const monthName = date.toLocaleString('vi-VN', { month: 'long' });
 		const monthObj = {
 			monthNo: String(date.getMonth() + 1).padStart(2, '0'),
@@ -20,6 +20,7 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 		}
 
 		while (date.getMonth() === month) {
+			isFuture = date.getTime() > new Date().getTime()
 			const yyyy = date.getFullYear();
 			const mm = monthObj.monthNo
 			const dd = String(date.getDate()).padStart(2, '0');
@@ -34,59 +35,32 @@ export function renderYearCalendar(year: number, records: Record[], employeeID: 
 				else {
 					monthObj.firstDayOffset = dayOfWeek;
 				}
-
 			}
 
-			// process records to style calendar
-			let classStr = ''
-			let isHasRecord = false
-			let recordLink, tooltip
-			if (!isFuture) {
-				if ( // has a record
-					recordC < records.length
-					&& new Date(dateStr).getTime() === new Date(records[recordC].date).getTime()
-				) {
-					isHasRecord = true
-					const { isAtWorkLate, isLeaveEarly, startTime, endTime } = records[recordC]
+			let record: Record | undefined, recordLink: string | undefined
+			let classStr
+			if (isFuture) {
+				classStr = 'disabled'
+			}
+			else {
+				if (records.length > 0 && r_count < records.length && records[r_count].date === dateStr) {
 					recordLink = `/records/edit?date=${dateStr}&employeeID=${employeeID}`
-
-					if (isAtWorkLate && isLeaveEarly) {
-						classStr = classStr + 'bg-danger bg-opacity-75 s_both has-tooltip'
-						tooltip = 'Cả hai'
-					} else if (isAtWorkLate) {
-						classStr = classStr + 'bg-warning bg-opacity-50 s_late has-tooltip'
-						tooltip = 'Đến muộn'
-					} else if (isLeaveEarly) {
-						classStr = classStr + 'bg-danger bg-opacity-50 s_early has-tooltip'
-						tooltip = 'Về sớm'
-					} else if (
-						dayOfWeek !== 0 && dayOfWeek !== 6
-						&& startTime
-					) {
-						classStr = classStr + 'bg-success bg-opacity-50 s_good has-tooltip'
-						tooltip = 'Đủ công'
-					}
-
-					recordC++
-				} else { // not has record
+					record = records[r_count]
+					r_count++
+				} else {
+					record = new Record({ date: dateStr, employeeID })
 					recordLink = `/records/new?date=${dateStr}&employeeID=${employeeID}`
 				}
-
-				if (classStr === '' && (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-					classStr = classStr + 'bg-secondary bg-opacity-50 s_none has-tooltip'
-					tooltip = 'Không công'
-				}
-
-			} else { // date is in future
-				classStr = classStr + 'disabled'
+				classStr = 'has-tooltip' + ' ' + `s_${record.status}`
 			}
 
 			monthObj.days.push({
 				dateStr,
 				dayNo: date.getDate(),
-				classStr: classStr,
+				record,
+				classStr,
 				recordLink,
-				tooltip
+				tooltip: record?.statusText ?? ''
 			});
 			date.setDate(date.getDate() + 1);
 		}

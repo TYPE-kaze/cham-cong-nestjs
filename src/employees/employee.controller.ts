@@ -17,6 +17,7 @@ import { workShifts } from "src/constants/work-shift";
 import { ShowRecordsDTO } from "./dto/show-records.dto";
 import { showRecordsHeaders } from "src/employees/constants/show-records-table-headers.const";
 import { StoreBaseUrlToReturnToOnErrorInterceptor } from "src/store-base-url-to-return-to-on-error.interceptor";
+import { ShowHeatMapDTO } from "./dto/show-heat-map.dto";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -27,10 +28,8 @@ export class EmployeeController {
 	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	@Render('employees/index')
 	async getIndex(
-		@Query() getIndexQueryDTO: GetIndexQueryDTO,
-		@Req() req
+		@Query() getIndexQueryDTO: GetIndexQueryDTO
 	) {
-		console.log(req.session)
 		const { query, sort, order } = getIndexQueryDTO
 		const numOfRowPerPage = getIndexQueryDTO.numOfRowPerPage
 			? parseInt(getIndexQueryDTO.numOfRowPerPage)
@@ -57,19 +56,16 @@ export class EmployeeController {
 	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
 	@Render('employees/show')
 	async showEmployeeHeatMapTab(
-		@Req() req,
 		@Param('id', ParseUUIDPipe) id: UUID,
-		@Query('year') year?: string,
+		@Query() showHeatMapDTO: ShowHeatMapDTO
 	) {
 		const now = new Date()
 		const currentYear = now.getFullYear()
 		const currentMonth = now.getMonth() + 1
 		let yearNum = currentYear
+		const { year, r_filter, r_monthYear, r_order, r_sort } = showHeatMapDTO
 		if (year && year !== '') {
 			yearNum = parseInt(year)
-		}
-		if (yearNum > currentYear || yearNum < 2000) {
-			throw new Error('year is from future')
 		}
 		const employee = await this.employeeService.getOneWithRecords(id, yearNum)
 		const calendar = renderYearCalendar(yearNum, employee.records, id)
@@ -80,7 +76,11 @@ export class EmployeeController {
 			year: yearNum,
 			id,
 			currentYear,
-			currentMonth
+			currentMonth,
+			r_filter: r_filter ?? '0',
+			r_monthYear: r_monthYear ?? '',
+			r_order: r_order ?? 'ASC',
+			r_sort: r_sort ?? 'date'
 		}
 	}
 
@@ -91,7 +91,7 @@ export class EmployeeController {
 		@Param('id', ParseUUIDPipe) id: UUID,
 		@Query() showRecordsDTO: ShowRecordsDTO
 	) {
-		const { monthYear, order, sort, filter } = showRecordsDTO
+		const { monthYear, order, sort, filter, h_year } = showRecordsDTO
 		const now = new Date()
 		const curMonth = now.getMonth() + 1
 		const curYear = now.getFullYear()
@@ -106,6 +106,7 @@ export class EmployeeController {
 		const defaultOrder = 'ASC'
 		return {
 			tab: 'records', employee, month, year, curMonth, curYear, headers: showRecordsHeaders,
+			h_year: h_year ?? String(curYear),
 			order: order ?? defaultOrder,
 			sort: sort ?? 'date',
 			defaultOrder,
@@ -149,7 +150,7 @@ export class EmployeeController {
 	) {
 		const { password, passwordOld } = body
 		await this.employeeService.changePassword(id, passwordOld, password)
-		req.flash('success', 'Đổi mật khẩu thành công')
+		req.flash('suceess', 'Đổi mật khẩu thành công')
 		return res.redirect(req?.session?.returnTo ?? `/employees/${id}`)
 	}
 

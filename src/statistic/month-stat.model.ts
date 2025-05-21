@@ -31,22 +31,19 @@ export class MonthStat extends Model {
 
 	@Column({
 		type: DataType.INTEGER,
-		allowNull: false,
-		defaultValue: 0
+		allowNull: true,
 	})
 	numOfDayLate: number
 
 	@Column({
 		type: DataType.INTEGER,
-		allowNull: false,
-		defaultValue: 0
+		allowNull: true,
 	})
 	numOfDayEarly: number
 
 	@Column({
 		type: DataType.INTEGER,
-		allowNull: false,
-		defaultValue: 0
+		allowNull: true,
 	})
 	numofLE: number
 }

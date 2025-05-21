@@ -35,7 +35,12 @@
 	<% i++ %>
 	<% } %>
 </div>
+
 <form method="GET" action="/employees/<%=id%>/heat-map" class="row g-3 align-items-center mb-3">
+	<input value="<%=r_filter%>" type="hidden" name="r_filter">
+	<input value="<%=r_monthYear%>" type="hidden" name="r_monthYear">
+	<input value="<%=r_order%>" type="hidden" name="r_order">
+	<input value="<%=r_sort%>" type="hidden" name="r_sort">
 	<div class="col-3 offset-4">
 		<label class="visually-hidden" for="year">Năm</label>
 		<div class="input-group">

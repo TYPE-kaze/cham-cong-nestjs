@@ -121,6 +121,27 @@ a.disabled {
 	color: var(--teal-900);
 }
 
+.date-grid a.s_la {
+	background-color: #EA868F;
+}
+
+.date-grid a.s_ea{
+	background-color: #FD9843;
+
+}
+
+.date-grid a.s_bo {
+	background-color: #DC3545;
+}
+
+.date-grid a.s_ok {
+	background-color: #75B798;
+}
+
+.date-grid a.s_no {
+	background-color: #ADB5BD;
+}
+
 table.index th a {
 	text-decoration: none;
 	color: black;

@@ -10,8 +10,16 @@
 		<%- include("show-first-section.partial.ejs") %>
 		<% const isRecordTab = tab === 'records' %>
 		<% const isHeatMapTab = tab === 'heat-map' %>
-		<% const recordTabLink = `/employees/${employee.id}/records` %>
-		<% const heatMapTabLink = `/employees/${employee.id}/heat-map` %>
+		<% let recordTabLink = `/employees/${employee.id}/records` %>
+		<% let heatMapTabLink = `/employees/${employee.id}/heat-map` %>
+		<% if (isHeatMapTab) { %>
+		<% recordTabLink = recordTabLink + '?filter=' + r_filter + '&monthYear=' + r_monthYear + '&order=' + r_order + '&sort=' + r_sort + '&h_year=' + year%>
+		<% } %>
+		<% if (isRecordTab) { %>
+		<% let monthStr = String(month) %>
+		<% if (month < 10) monthStr = '0' + monthStr%>
+		<% heatMapTabLink = heatMapTabLink + '?r_filter=' + filter + '&r_monthYear=' + `${monthStr}-${year}` + '&r_order=' + order + '&r_sort=' + sort + '&year=' + h_year%>
+		<% } %>
 		<ul class="nav nav-tabs mb-2">
 			<li class="nav-item">
 				<a class="nav-link<%=isRecordTab ? ' active' : ''%>" href="<%=recordTabLink%>">Chấm công</a>

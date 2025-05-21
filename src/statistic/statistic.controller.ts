@@ -121,15 +121,17 @@ export class StatisticController {
 		@Res() res
 	) {
 		const now = new Date()
-		if (!month || month == '') {
-			month = String(now.getMonth() + 1)
+		let monthNum = now.getMonth() + 1
+		let yearNum = now.getFullYear() + 1
+		if (month) {
+			monthNum = parseInt(month)
 		}
 
-		if (!year || year == '') {
-			year = String(now.getFullYear())
+		if (year) {
+			yearNum = parseInt(year)
 		}
 
-		await this.statService.updateMonthStatBaseOnRecord(month, year)
+		await this.statService.updateMonthStatBaseOnRecord(monthNum, yearNum)
 		req.flash('success', `Cập nhật thống kê tháng ${month} năm ${year}`)
 		return res.redirect(req?.session?.returnTo ?? '/stats/month')
 	}
