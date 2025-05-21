@@ -81,13 +81,13 @@ export class StatisticController {
 	}
 
 	@Get('month')
-	@Render('stats/month')
 	@UseInterceptors(StoreBaseUrlToReturnToOnErrorInterceptor, StoreReturnToInterceptor)
+	@Render('stats/month')
 	async getStatByMonth(
 		@Query() getMonthQueryDTO: GetMonthQueryDTO
 	) {
 		let month: string, year: string
-		const { monthYear, name, numOfRowPerPage, pageNo, order, sort } = getMonthQueryDTO
+		const { monthYear, query, numOfRowPerPage, pageNo, order, sort } = getMonthQueryDTO
 		if (!monthYear || monthYear == '') {
 			const now = new Date()
 			month = String(now.getMonth() + 1)
@@ -98,13 +98,14 @@ export class StatisticController {
 			month = frags[0].replace(/^0/, '')
 			year = frags[1]
 		}
-
-		const { rows: list, count } = await this.statService.getStatOfMonth(getMonthQueryDTO)
+		const [list, count] = await this.statService.getStatOfMonth(getMonthQueryDTO)
 		return {
 			pageNo: pageNo ? parseInt(pageNo) : 1,
 			count,
-			month: month.replace(/^[1-9]$/, '0$&'), year, list, headers,
-			name: name ?? '',
+			month: month.replace(/^[1-9]$/, '0$&'), year,
+			list,
+			headers,
+			query: query ?? '',
 			numOfRowPerPage: numOfRowPerPage ? parseInt(numOfRowPerPage) : 30,
 			defaultOrder: 'ASC',
 			order: order ?? '',
@@ -133,6 +134,7 @@ export class StatisticController {
 
 		await this.statService.updateMonthStatBaseOnRecord(monthNum, yearNum)
 		req.flash('success', `Cập nhật thống kê tháng ${month} năm ${year}`)
-		return res.redirect(req?.session?.returnTo ?? '/stats/month')
+		// return res.redirect(req?.session?.returnTo ?? '/stats/month')
+		return res.redirect(`/stats/month?monthYear=${month}-${year}`)
 	}
 }

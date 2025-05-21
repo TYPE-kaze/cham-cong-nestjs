@@ -118,9 +118,20 @@ export class EmployeeController {
 	@Get(':id')
 	showOne(
 		@Res() res: Response,
-		@Param('id', ParseUUIDPipe) id: UUID
+		@Param('id', ParseUUIDPipe) id: UUID,
+		@Query() query
 	) {
-		res.redirect(`/employees/${id}/records`)
+		let link = `/employees/${id}/records`
+		console.log(query)
+		let count = 1
+		for (const key in query) {
+			if (count === 1) {
+				link = link + '?' + key + '=' + query[key]
+				count++
+			}
+			else link = link + '&' + key + query[key]
+		}
+		res.redirect(link)
 	}
 
 	@Get('edit/:id')

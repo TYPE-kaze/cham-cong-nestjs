@@ -6,18 +6,18 @@
 			<%=i + 1 + ( ( pageNo - 1 ) * numOfRowPerPage )%>
 		</td>
 		<td>
-			<a href="/employees/<%=item.employee.id%>">
+			<a href="/employees/<%=item.employee.id%>?monthYear=<%=`${month}-${year}`%>">
 				<%=item.employee.name%>
 			</a>
 		</td>
 		<td>
-			<%=item.numOfDayLate%>
+			<%=item.numOfDayLate ?? 'N/A'%>
 		</td>
 		<td>
-			<%=item.numOfDayEarly%>
+			<%=item.numOfDayEarly ?? 'N/A'%>
 		</td>
 		<td>
-			<%=item.numofLE%>
+			<%=item.numofLE ?? 'N/A'%>
 		</td>
 	</tr>
 	<% } %>

@@ -7,11 +7,16 @@
 		<th scope="col" class="<%=c%>">
 			<% const selectedOrder = order === 'ASC' ? 'DESC' : 'ASC' %>
 			<% const o = isSelectedSort ? selectedOrder : defaultOrder%>
-			<a href="/stats/month?monthYear=<%=`${month}-${year}`%>&name=<%=name%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=o%>">
+			<% const isSortable = c.includes('sort') %>
+			<% if(isSortable) { %>
+			<a href="/stats/month?monthYear=<%=`${month}-${year}`%>&query=<%=query%>&sort=<%=type%>&numOfRowPerPage=<%=numOfRowPerPage%>&order=<%=o%>">
+				<% } %>
 				<span>
 					<%=title%>
 				</span>
+				<% if(isSortable) { %>
 			</a>
+			<% } %>
 		</th>
 		<% } %>
 	</tr>

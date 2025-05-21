@@ -1,5 +1,5 @@
 <% const numOfPage = Math.ceil(count / numOfRowPerPage) %>
-<% const searchUrl = `/stats/month?monthYear=${month}-${year}&name=${name}&sort=${sort}&order=${order}&numOfRowPerPage=${numOfRowPerPage}` %>
+<% const searchUrl = `/stats/month?monthYear=${month}-${year}&query=${query}&sort=${sort}&order=${order}&numOfRowPerPage=${numOfRowPerPage}` %>
 <div class="row justify-content-between">
 	<div class="d-md-flex justify-content-between align-items-center col-md-auto me-auto">
 		<% const b = ( pageNo - 1 ) * numOfRowPerPage %>

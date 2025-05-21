@@ -5,7 +5,7 @@ import { IsNotFutureMonth } from "src/utils/is-not-future-month.decorator";
 export class GetMonthQueryDTO {
 	@Transform(({ value }) => value === '' ? undefined : value)
 	@IsOptional()
-	name?: string;
+	query?: string;
 
 	@Transform(({ value }) => value === '' ? undefined : value)
 	@IsNotFutureMonth()

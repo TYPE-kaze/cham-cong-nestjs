@@ -11,14 +11,12 @@ import { Op, where } from "sequelize";
 @Injectable()
 export class StatisticService {
 	constructor(
-		private employeeService: EmployeeService,
 		private recordService: RecordService,
 		@InjectModel(MonthStat) private readonly monthStatModel: typeof MonthStat,
 		@InjectModel(Employee) private readonly employeeModel: typeof Employee
 	) { }
 	async getStatOfMonth(getMonthQueryDTO: GetMonthQueryDTO) {
-
-		let { monthYear, name, order, sort } = getMonthQueryDTO
+		let { monthYear, query, order, sort } = getMonthQueryDTO
 		let month: string, year: string
 		if (!monthYear) {
 			const now = new Date()
@@ -31,35 +29,95 @@ export class StatisticService {
 			year = frags[1]
 		}
 
-		const option: any = {
-			where: { month, year },
-			include: [{ model: Employee, required: true }]
-		}
-		if (name) {
-			option.include[0].where = { name: { [Op.like]: `%${name}%` } }
+		const kEmWhere: any = { [Op.and]: [] }
+		const eWhere: any = { [Op.and]: [] }
+
+		// let isNAQuery = false
+		if (query) {
+			// isNAQuery = /n\/a/.test(query)
+			// if (!isNAQuery) {
+			kEmWhere[Op.and].push(
+				{ name: { [Op.like]: `%${query}%` } }
+			)
+
+			eWhere[Op.and].push(
+				{ name: { [Op.like]: `%${query}%` } }
+			)
+			// }
 		}
 
-		if (sort) {
-			const sortOrder = order ?? 'ASC'
-			if (sort === 'name') { //employee's name
-				// QUIRK: sq-ts implictly made an alias for model 
-				option.order = [[{ model: Employee, as: 'employee' }, sort, sortOrder]] //quirk
+
+		let kStats = await this.monthStatModel.findAll({
+			order: [['employeeID', 'ASC']],
+			include: [{
+				model: Employee,
+				required: true,
+			}],
+			where: {
+				month, year
+			}
+		})
+
+		const employees = await this.employeeModel.findAll(
+			{
+				order: [['id', 'ASC']],
+				where: eWhere
+			}
+		)
+		let stats: MonthStat[] = []
+		let ukStats: MonthStat[] = []
+		let k_count = 0
+		for (const e of employees) {
+			let m: MonthStat
+			if (kStats.length > 0 && k_count < kStats.length && e.id === kStats[k_count].employeeID) {
+				m = kStats[k_count]
+				stats.push(m)
+				k_count++
 			} else {
-				option.order = [[sort, sortOrder]]
+				m = new MonthStat({ employeeID: e.id, month, year })
+				m.employee = e
+				ukStats.push(m)
+				stats.push(m)
 			}
 		}
+		//sort 
+		switch (sort) {
+			case 'name':
+				if (order === 'ASC') {
+					stats = stats.sort((a, b) => {
+						return a.employee.name.localeCompare(b.employee.name, 'vi')
+					})
+				} else {
+					stats = stats.sort((a, b) => {
+						return -a.employee.name.localeCompare(b.employee.name, 'vi')
+					})
+				}
+				break;
+			case 'numOfDayEarly':
+			case 'numOfDayLate':
+			case 'numofLE':
+				if (order === 'ASC') {
+					kStats = kStats.sort((a, b) => a[sort] - b[sort])
+				} else {
+					kStats = kStats.sort((a, b) => b[sort] - a[sort])
+				}
+				stats = [...kStats, ...ukStats]
+				break
+			default:
+				break
+		}
 
+		const count = stats.length
 		const numOfRowPerPage = getMonthQueryDTO.numOfRowPerPage
 			? parseInt(getMonthQueryDTO.numOfRowPerPage)
 			: 30
-		option.limit = numOfRowPerPage
-
 		const pageNo = getMonthQueryDTO.pageNo
 			? parseInt(getMonthQueryDTO.pageNo)
 			: 1
-		option.offset = (pageNo - 1) * numOfRowPerPage
-
-		return await this.monthStatModel.findAndCountAll(option)
+		const s = 0 + numOfRowPerPage * (pageNo - 1)
+		const e = s + numOfRowPerPage - 1
+		stats = stats.slice(s, e)
+		return [stats, count] as const
 	}
 
 	async deleteMonthStatOfOneEmployee(employeeID: UUID) {
