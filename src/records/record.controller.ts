@@ -121,29 +121,10 @@ export class RecordController {
 		@Query('year') year: string,
 	) {
 		const employees = await this.employeeService.getAll();
-		const renderEmployees = employees.map((e) => {
-			const { name, id } = e.dataValues
-			return { name, id }
-		})
-
 		const records = await this.recordService.filter(employeeID, day, month, year)
-		const renderRecords = records.map((r) => {
-			const { reason, date, employee, employeeID, startTime, endTime, isAtWorkLate, isLeaveEarly } = r.dataValues
-			const { id, name } = employee.dataValues
-			return {
-				reason,
-				date,
-				startTime,
-				endTime,
-				employeeID,
-				isAtWorkLate,
-				isLeaveEarly,
-				employee: { id, name },
-			}
-		})
 		return {
-			employees: renderEmployees,
-			records: renderRecords,
+			employees,
+			records,
 			selectedDay: day,
 			selectedMonth: month,
 			selectedYear: year,

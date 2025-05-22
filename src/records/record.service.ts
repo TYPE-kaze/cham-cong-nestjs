@@ -207,7 +207,10 @@ export class RecordService {
 
 		const records = await this.recordModel.findAll({
 			where,
-			include: [Employee],
+			include: [{
+				model: Employee,
+				required: true
+			}],
 		})
 		return records
 	}
@@ -239,7 +242,7 @@ export class RecordService {
 			...{ [Op.and]: conditions },
 		}
 
-		const records = this.recordModel.findAll({ where: finalWhere, include: [Employee] })
+		const records = this.recordModel.findAll({ where: finalWhere, include: [{ model: Employee, required: true }] })
 		return records
 	}
 
@@ -290,7 +293,7 @@ export class RecordService {
 		let record = await this.recordModel.findOne(
 			{
 				where: { employeeID, date },
-				include: [Employee]
+				include: [{ model: Employee, required: true }]
 			})
 		if (record === null) {
 			throw new Error('Found no record')

@@ -3,7 +3,7 @@ import { randomUUID, UUID } from 'node:crypto';
 import { Record } from 'src/records/record.model';
 import { MonthStat } from 'src/statistic/month-stat.model';
 
-@Table({ tableName: 'employees' })
+@Table({ tableName: 'employees', paranoid: true })
 export class Employee extends Model {
 	@PrimaryKey
 	@Column({ type: DataType.UUID, defaultValue: randomUUID })

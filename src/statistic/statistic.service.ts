@@ -68,16 +68,12 @@ export class StatisticService {
 		let ukStats: MonthStat[] = []
 		let k_count = 0
 		for (const e of employees) {
-			let m: MonthStat
 			if (kStats.length > 0 && k_count < kStats.length && e.id === kStats[k_count].employeeID) {
-				// m = kStats[k_count]
-				// stats.push(m)
 				k_count++
 			} else {
-				m = new MonthStat({ employeeID: e.id, month, year })
+				const m = new MonthStat({ employeeID: e.id, month, year })
 				m.employee = e
 				ukStats.push(m)
-				// stats.push(m)
 			}
 		}
 

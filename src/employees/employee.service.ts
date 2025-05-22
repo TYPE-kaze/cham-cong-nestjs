@@ -82,11 +82,30 @@ export class EmployeeService {
 		return await employee.save()
 	}
 
-	async findOrCreateOneByName(name: string, email?: string, startWorkTime?: string, endWorkTime?: string) {
+	async findOrCreateOneByName(name: string, email?: string) {
+		// FFT: may be better to manually specify which VNese characters to map to which ASCII characters
+		// đ is just đ and is not an accented character
+		if (!email) {
+			const frags = name.normalize('NFD')
+				.replace(/\p{Diacritic}/gu, '')
+				.toLowerCase()
+				.trim()
+				.split(/\s+/)
+			let em = frags.at(-1)
+			if (frags.length > 1) {
+				em = em + '.'
+				for (let i = 0; i < frags.length - 1; i++) {
+					em = em + frags[i][0]
+				}
+			}
+			em = em + '@mobifone.vn'
+			em = em.replace(/đ/gu, 'd')
+			email = em
+		}
 		const [employee, _] = await this.employeeModel.findOrCreate({
 			where: {
 				name,
-				email: email ? email : name.trim().replace(/\s/g, '_') + '@mobiphone.vn',
+				email,
 				shift: '2'
 			}
 		})
