@@ -32,26 +32,26 @@ export class StatisticService {
 		const kEmWhere: any = { [Op.and]: [] }
 		const eWhere: any = { [Op.and]: [] }
 
-		// let isNAQuery = false
+		let isNA = false
 		if (query) {
-			// isNAQuery = /n\/a/.test(query)
-			// if (!isNAQuery) {
-			kEmWhere[Op.and].push(
-				{ name: { [Op.like]: `%${query}%` } }
-			)
+			isNA = /n\/a?/i.test(query)
+			if (!isNA) {
+				kEmWhere[Op.and].push(
+					{ name: { [Op.like]: `%${query}%` } }
+				)
 
-			eWhere[Op.and].push(
-				{ name: { [Op.like]: `%${query}%` } }
-			)
-			// }
+				eWhere[Op.and].push(
+					{ name: { [Op.like]: `%${query}%` } }
+				)
+			}
 		}
-
 
 		let kStats = await this.monthStatModel.findAll({
 			order: [['employeeID', 'ASC']],
 			include: [{
 				model: Employee,
 				required: true,
+				where: kEmWhere
 			}],
 			where: {
 				month, year
@@ -70,16 +70,19 @@ export class StatisticService {
 		for (const e of employees) {
 			let m: MonthStat
 			if (kStats.length > 0 && k_count < kStats.length && e.id === kStats[k_count].employeeID) {
-				m = kStats[k_count]
-				stats.push(m)
+				// m = kStats[k_count]
+				// stats.push(m)
 				k_count++
 			} else {
 				m = new MonthStat({ employeeID: e.id, month, year })
 				m.employee = e
 				ukStats.push(m)
-				stats.push(m)
+				// stats.push(m)
 			}
 		}
+
+		if (isNA) kStats = []
+		stats = [...kStats, ...ukStats]
 		//sort 
 		switch (sort) {
 			case 'name':
