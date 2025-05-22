@@ -200,6 +200,11 @@ export class EmployeeController {
 	) {
 		await this.employeeService.deleteOne(id)
 		req.flash('success', `Xóa nhân viên thành công`)
-		return res.redirect(req?.session?.returnTo ?? `/employees`)
+		let link = req?.session?.returnTo
+		// do not return to show page of the deleted employee
+		if (!link || /^\/employees\/\w+-\w+-\w+-\w+-\w+/.test(link)) {
+			link = '/employees'
+		}
+		return res.redirect(link)
 	}
 }
