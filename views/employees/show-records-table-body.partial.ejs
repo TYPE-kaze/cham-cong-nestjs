@@ -37,7 +37,7 @@
 		</td>
 		<% if (user.role === 'checker') { %>
 		<td class="text-center">
-			<% if (!r.isOk && r.isWeekDay) { %>
+			<% if (!r.isOk && r.isWeekDay && r.isReasonable) { %>
 			<div class="btn-group btn-group-sm" role="group">
 				<a data-bs-toggle="tooltip" data-bs-title="Chấm đủ công" href="/records/accept?employeeID=<%=r.employeeID%>&date=<%=r.date%>&_method=PATCH" class="has-tooltip btn btn-outline-success">
 					<i class="bi bi-check2"></i>

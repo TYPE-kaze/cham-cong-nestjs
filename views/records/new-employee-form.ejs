@@ -28,10 +28,12 @@
 			<input id="status" disabled value="Không công" type="text" class="form-control">
 		</div>
 	</div>
+	<% if (isReasonable) { %>
 	<div class="mb-3">
 		<label for="reason" class="form-label">Giải trình</label>
 		<textarea class="form-control" name="reason" id="reason" rows="4"></textarea>
 	</div>
 	<button class="btn btn-success" type="submit">Giải trình</button>
+	<% } %>
 	<a class="btn btn-secondary" href="<%=returnTo%>">Quay lại</a>
 </form>

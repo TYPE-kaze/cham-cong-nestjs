@@ -1,7 +1,8 @@
 import { UUID } from 'node:crypto';
 import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo, AllowNull, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { Employee } from 'src/employees/employee.model';
-
+import { ConfigService } from 'src/config/config.service';
+const MS_PER_DAY = 86400000; // 1000 * 60 * 60 * 24
 @Table({ tableName: "records" })
 export class Record extends Model {
 	@PrimaryKey
@@ -140,5 +141,12 @@ export class Record extends Model {
 				return ''
 		}
 
+	}
+
+	get isReasonable(): boolean {
+		const now = new Date()
+		const date = new Date(this.date)
+		if (now.getMonth() - date.getMonth() > 1) return false
+		return now.getDate() <= ConfigService.config.maxReasonLimit
 	}
 }

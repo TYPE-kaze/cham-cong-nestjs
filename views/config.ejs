@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head', { title: 'Cấu hình hệ thống' }); %>
+
+<body>
+	<%- include('partials/navbar') %>
+	<main class="container mt-3 mb-3">
+		<%- include("partials/flash") %>
+		<h1 class="visually-hidden border-bottom pb-2">Cài đặt</h1>
+		<form id="setting-form" method="POST" action="/config">
+			<h2 class="fs-3 border-bottom pb-2">Cài đặt chung</h2>
+			<div class="row mb-3">
+				<label for="maxReasonLimit" class="text-end col-3 col-form-label">Hạn giải trình:</label>
+				<div class="col-6 d-flex justify-content-start align-items-center">
+					<span class="me-2">Ngày</span>
+					<select class="form-select me-2" id="maxReasonLimit" name="maxReasonLimit">
+						<option <%= maxReasonLimit === 10 ? 'selected' : '' %> value="10">10</option>
+						<option <%= maxReasonLimit === 15 ? 'selected' : '' %> value="15">15</option>
+						<option <%= maxReasonLimit === 20 ? 'selected' : '' %> value="20">20</option>
+						<option <%= maxReasonLimit === 25 ? 'selected' : '' %> value="25">25</option>
+					</select>
+					<span>của tháng sau</span>
+				</div>
+			</div>
+			<h2 class="fs-3 border-bottom pb-2">Cài đặt ca</h2>
+			<button type="submit" class="btn btn-success">Cập nhật</button>
+		</form>
+	</main>
+</body>
+
+</html>

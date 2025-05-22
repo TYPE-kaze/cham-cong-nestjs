@@ -36,6 +36,8 @@ export class RecordService {
 	}
 	async createOneReason(createOneReasonDTO: CreateOneReasonDTO) {
 		const { employeeID, reason, date } = createOneReasonDTO
+		const r = new Record({ employeeID, date })
+		if (!r.isReasonable) throw Error('The record is not reasonable')
 		const record = await this.recordModel.create({ employeeID, reason, date })
 		return record
 	}
@@ -48,7 +50,7 @@ export class RecordService {
 			}
 		})
 		if (!record) throw Error('find no record')
-
+		if (!record.isReasonable) throw new Error('The record is not reasonable')
 		return await record.update({ reason: reasonDTO.reason })
 	}
 

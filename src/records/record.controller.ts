@@ -16,6 +16,7 @@ import { renderDay } from "./renders/day";
 import { StoreReturnToOnErrorInterceptor } from "src/store-return-to-on-error.interceptor";
 import { StoreBaseUrlToReturnToInterceptor } from "src/store-url-to-return-to.interceptor";
 import { AcceptReasonDTO } from "./dto/accept-reason.dto";
+import { Record } from "./record.model";
 
 @Controller('records')
 export class RecordController {
@@ -143,7 +144,9 @@ export class RecordController {
 	) {
 		const isChecker = req.user.role === 'checker'
 		const employees = await this.employeeService.getAll()
-		return { date, employees, employeeID, isChecker, returnTo: req.session.returnTo }
+		const record = new Record({ date, employeeID })
+		const { isReasonable } = record
+		return { isReasonable, date, employees, employeeID, isChecker, returnTo: req.session.returnTo }
 	}
 
 	@UseGuards(AuthenticatedGuard)
@@ -157,7 +160,7 @@ export class RecordController {
 		const date = getEditFormDTO.date
 		const employeeID = getEditFormDTO.employeeID
 		const record = await this.recordService.findOne(date, employeeID)
-		const { startTime, endTime, reason, isAtWorkLate, isLeaveEarly } = record
+		const { isReasonable, startTime, endTime, reason, isAtWorkLate, isLeaveEarly } = record
 		const isChecker = req.user.role === 'checker'
 		const returnTo = req.session.returnTo
 		let status = ''
@@ -175,7 +178,7 @@ export class RecordController {
 				status = '4'
 			}
 		}
-		return { status, returnTo, isChecker, reason, date, employeeID, startTime, endTime, name: record.dataValues.employee.dataValues.name }
+		return { isReasonable, status, returnTo, isChecker, reason, date, employeeID, startTime, endTime, name: record.employee.name }
 	}
 
 	@Post()

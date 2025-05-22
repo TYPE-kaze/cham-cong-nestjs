@@ -168,3 +168,7 @@ table.index th.sort.selected-ASC a span::after {
 table.index th.table-index {
 	width: 40px;
 }
+
+#setting-form select#maxReasonLimit {
+	width: 70px;
+}

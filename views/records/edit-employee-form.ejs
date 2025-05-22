@@ -30,9 +30,16 @@
 		</div>
 	</div>
 	<div class="mb-3">
+		<% if(isReasonable) { %>
 		<label for="reason" class="form-label">Giải trình</label>
 		<textarea class="form-control" name="reason" id="reason" rows="4"><%= reason %></textarea>
+		<% } else { %>
+		<div>Giải trình: <%= reason %></div>
+		<% } %>
+
 	</div>
+	<% if(isReasonable) { %>
 	<button class="btn btn-success" type="submit">Cập nhật</button>
+	<% } %>
 	<a class="btn btn-secondary" href="<%=returnTo%>">Quay lại</a>
 </form>

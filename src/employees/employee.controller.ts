@@ -161,7 +161,7 @@ export class EmployeeController {
 	) {
 		const { password, passwordOld } = body
 		await this.employeeService.changePassword(id, passwordOld, password)
-		req.flash('suceess', 'Đổi mật khẩu thành công')
+		req.flash('success', 'Đổi mật khẩu thành công')
 		return res.redirect(req?.session?.returnTo ?? `/employees/${id}`)
 	}
 
