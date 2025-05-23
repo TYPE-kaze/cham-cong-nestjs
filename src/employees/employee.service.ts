@@ -25,13 +25,8 @@ export class EmployeeService {
 					{ name: { [Op.like]: `%${query}%` } },
 					{ phone: { [Op.like]: `%${query}%` } },
 					{ email: { [Op.like]: `%${query}%` } },
+					{ shift: { [Op.like]: `%${query}%` } }
 				],
-			}
-
-			let res = /ca? *([12])/.exec(query)
-			if (res) {
-				const shift = res[1]
-				option.where[Op.or].push({ shift })
 			}
 		}
 
@@ -106,7 +101,6 @@ export class EmployeeService {
 			where: {
 				name,
 				email,
-				shift: '2'
 			}
 		})
 		return await employee.save()

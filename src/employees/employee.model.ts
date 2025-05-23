@@ -26,10 +26,10 @@ export class Employee extends Model {
 	phone?: string;
 
 	@Column({
-		type: DataType.CHAR(1),
-		defaultValue: '2',
+		defaultValue: 'Ca 2',
+		allowNull: false
 	})
-	shift: '1' | '2';
+	shift: string
 
 	@HasMany(() => Record)
 	records: Record[]

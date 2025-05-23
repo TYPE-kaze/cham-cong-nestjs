@@ -1,6 +1,6 @@
 import { Transform } from "class-transformer";
 import { IsEmail, IsIn, IsNotIn, IsOptional, IsPhoneNumber, Matches } from "class-validator";
-import { workShifts } from "src/constants/work-shift";
+import { IsEmployeeShift } from "../decorators/is-employee-shift.decorator";
 const vnNameCS = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềếềểẾỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỳỵỷỹýÝ\s]+$/;
 export class CreateEmployeeDTO {
 	@Matches(vnNameCS, { message: "Tên chứa kí tự đặc biệt hoặc không hợp lệ" })
@@ -15,6 +15,7 @@ export class CreateEmployeeDTO {
 	@IsEmail({}, { message: "Email không hợp lệ" })
 	@IsNotIn(['checker'])
 	email: string;
-	@IsIn(Object.getOwnPropertyNames(workShifts))
+
+	@IsEmployeeShift()
 	shift: string;
 }

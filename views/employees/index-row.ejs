@@ -31,10 +31,9 @@
 	<td>
 		<%=e.dataValues.phone%>
 	</td>
-	<% const { startTime, endTime } = workShifts[e.shift] %>
 	<td>
-		<span data-bs-toggle="tooltip" data-bs-title="<%=`${startTime}-${endTime}`%>" class="has-tooltip">
-			Ca <%=e.shift%>
+		<span>
+			<%=e.shift%>
 		</span>
 	</td>
 	<td class=" d-flex text-center">

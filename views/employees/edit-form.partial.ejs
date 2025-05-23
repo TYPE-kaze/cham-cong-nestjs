@@ -37,9 +37,10 @@
 		<div class="col-5">
 			<label for="shift" class="form-label">Ca làm việc</label>
 			<select class="form-select" id="shift" name="shift">
-				<% const { shift } = employee  %>
-				<option <%=shift === '1' ? 'selected' : ''%> value="1"><%=workShifts[1].name%> (Từ <%=workShifts[1].startTime%> đến <%=workShifts[1].endTime%>)</option>
-				<option <%=shift === '2' ? 'selected' : ''%> value="2"><%=workShifts[2].name%> (Từ <%=workShifts[2].startTime%> đến <%=workShifts[2].endTime%>)</option>
+				<% for (const shift of shifts) { %>
+				<% const isCurrentShift = shift.kind === employee.shift %>
+				<option <%=isCurrentShift ? 'selected' : ''%> value="<%=shift.kind%>"> <%=shift.kind%> (<%=shift.startTime%> đến <%=shift.endTime%>)</option>
+				<% } %>
 			</select>
 		</div>
 	</div>

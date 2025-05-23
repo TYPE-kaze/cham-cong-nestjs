@@ -18,6 +18,7 @@ import { ShowRecordsDTO } from "./dto/show-records.dto";
 import { showRecordsHeaders } from "src/employees/constants/show-records-table-headers.const";
 import { StoreBaseUrlToReturnToOnErrorInterceptor } from "src/store-base-url-to-return-to-on-error.interceptor";
 import { ShowHeatMapDTO } from "./dto/show-heat-map.dto";
+import { ConfigService } from "src/config/config.service";
 
 @Controller('employees')
 @UseGuards(AuthenticatedGuard)
@@ -41,7 +42,7 @@ export class EmployeeController {
 		const { rows: employees, count } = await this.employeeService.getEmployeeForIndexPage(getIndexQueryDTO)
 		const headers = getEmpoyeeListHeaders()
 		const defaultOrder = 'ASC'
-		return { employees, query, defaultOrder, sort, order, headers, numOfRowPerPage, count, pageNo, workShifts }
+		return { employees, query, defaultOrder, sort, order, headers, numOfRowPerPage, count, pageNo, shifts: ConfigService.config.shifts }
 	}
 
 	@Get('new')
@@ -49,7 +50,7 @@ export class EmployeeController {
 	@UseInterceptors(StoreReturnToOnErrorInterceptor)
 	@Render('employees/new')
 	async getNewForm() {
-		return { workShifts }
+		return { shifts: ConfigService.config.shifts }
 	}
 
 	@Get(':id/heat-map')
@@ -122,7 +123,6 @@ export class EmployeeController {
 		@Query() query
 	) {
 		let link = `/employees/${id}/records`
-		console.log(query)
 		let count = 1
 		for (const key in query) {
 			if (count === 1) {
@@ -140,7 +140,7 @@ export class EmployeeController {
 	@Render('employees/edit')
 	async getEditForm(@Param('id', ParseUUIDPipe) id: UUID) {
 		const employee = await this.employeeService.findOne(id)
-		return { employee, workShifts }
+		return { employee, shifts: ConfigService.config.shifts }
 	}
 
 	@Get('password/:id')

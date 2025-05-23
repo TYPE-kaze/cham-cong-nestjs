@@ -23,6 +23,17 @@
 				</div>
 			</div>
 			<h2 class="fs-3 border-bottom pb-2">Cài đặt ca</h2>
+			<% for (const s of shifts) { %>
+			<div class="row mb-3">
+				<label for="" class="text-end col-3 col-form-label"><%= s.kind %>:</label>
+				<div class="col-3 d-flex justify-content-start align-items-center">
+					<span class="me-2">Từ</span>
+					<input name="shifts[<%=s.kind%>][startTime]" value="<%=s.startTime%>" class="me-2 form-control" type="time" id="">
+					<span class="me-2">đến</span>
+					<input name="shifts[<%=s.kind%>][endTime]" value="<%=s.endTime%>" class="form-control" type="time" name="" id="">
+				</div>
+			</div>
+			<% } %>
 			<button type="submit" class="btn btn-success">Cập nhật</button>
 		</form>
 	</main>

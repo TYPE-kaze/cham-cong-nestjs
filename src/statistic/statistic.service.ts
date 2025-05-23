@@ -146,7 +146,6 @@ export class StatisticService {
 			}
 		}
 
-		console.log(t)
 		for (const employeeID in t) {
 			const [m_stat, _] = await this.monthStatModel.findOrCreate(
 				{

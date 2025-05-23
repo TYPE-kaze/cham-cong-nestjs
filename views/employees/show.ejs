@@ -6,7 +6,7 @@
 	<%- include('../partials/navbar') %>
 	<main class="container mt-3 mb-3">
 		<%- include("../partials/flash") %>
-		<h1><%=employee.name%> </h1>
+		<h1 class="visually-hidden"><%=employee.name%> </h1>
 		<%- include("show-first-section.partial.ejs") %>
 		<% const isRecordTab = tab === 'records' %>
 		<% const isHeatMapTab = tab === 'heat-map' %>

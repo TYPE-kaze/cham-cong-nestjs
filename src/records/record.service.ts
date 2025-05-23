@@ -14,6 +14,7 @@ import { UpdateReasonDTO } from "./dto/update-one-reason.dto";
 import { CreateOneReasonDTO } from "./dto/create-one-reason.dto";
 import { workShifts } from "src/constants/work-shift";
 import { AcceptReasonDTO } from "./dto/accept-reason.dto";
+import { ConfigService } from "src/config/config.service";
 const { read, utils } = xlsx
 const { decode_range, encode_cell } = utils
 
@@ -22,6 +23,7 @@ export class RecordService {
 	constructor(
 		private employeeService: EmployeeService,
 		private worktimeRuleService: WorktimeRuleService,
+		private configService: ConfigService,
 		@InjectModel(Record) private readonly recordModel: typeof Record
 	) { }
 
@@ -118,22 +120,14 @@ export class RecordService {
 					})
 
 					// are there something like a bulk update?
+					const shifts = this.configService.getShiftsObject()
+
 					if (currentRecord) {
-						if (
-							currentRecord.startTime
-							&& currentRecord.startTime.startsWith(startTime)
-							&& currentRecord.endTime
-							&& currentRecord.endTime.startsWith(endTime)
-						) {
-							updatedRecords.push(currentRecord)
-						}
-						else {
-							const r = await currentRecord.update({ startTime, endTime, isAtWorkLate, isLeaveEarly })
-							updatedRecords.push(r)
-						}
+						const r = await currentRecord.update({ startTime, endTime, isAtWorkLate, isLeaveEarly, shiftID: shifts[employee.shift].id })
+						updatedRecords.push(r)
 					}
 					else {
-						const record = { employeeID: employee.id, date, startTime, endTime, isAtWorkLate, isLeaveEarly }
+						const record = { employeeID: employee.id, date, startTime, endTime, isAtWorkLate, isLeaveEarly, shiftID: shifts[employee.shift].id }
 						newRecords.push(record)
 					}
 				}
@@ -286,12 +280,13 @@ export class RecordService {
 				}
 		}
 
-		const record = await (new this.recordModel({ date, startTime, endTime, employeeID, isAtWorkLate, isLeaveEarly, reason })).save()
+		const shifts = this.configService.getShiftsObject()
+		const record = await (new this.recordModel({ shiftID: shifts[employee.shift].id, date, startTime, endTime, employeeID, isAtWorkLate, isLeaveEarly, reason })).save()
 		return record
 	}
 
-	async updateOne(updateEmployeeDTO: CreateRecordDTO) {
-		const { employeeID, date, startTime, endTime, reason, status } = updateEmployeeDTO
+	async updateOne(updateRecordDTO: CreateRecordDTO) {
+		const { employeeID, date, startTime, endTime, reason, status } = updateRecordDTO
 		let record = await this.recordModel.findOne(
 			{
 				where: { employeeID, date },
@@ -353,19 +348,29 @@ export class RecordService {
 	}
 
 	isEmployeeLate(employee: Employee, startTime: string) {
-		const startWorkTime = workShifts[employee.shift].startTime
-		const ruleD = new Date(`1970-01-01T${startWorkTime}:00Z`)
-		return new Date(`1970-01-01T${startTime}Z`) > ruleD
+		const config = this.configService.config
+		let startWorkTime: any
+		for (const sh of config.shifts) {
+			if (sh.kind === employee.shift) {
+				startWorkTime = sh.startTime
+				const ruleD = new Date(`1970-01-01T${startWorkTime}:00Z`)
+				return new Date(`1970-01-01T${startTime}Z`) > ruleD
+			}
+		}
 	}
 
 	isEmployeeLeaveEarly(employee: Employee, startTime: string, endTime: string) {
 		const startTimeD = new Date(`1970-01-01T${startTime}:00Z`)
 		const leaveTimeD = new Date(`1970-01-01T${endTime}:00Z`)
-		const startWorkTime = workShifts[employee.shift].startTime
-		const endWorkTime = workShifts[employee.shift].endTime
-		const ruleStartTimeD = new Date(`1970-01-01T${startWorkTime}:00Z`)
-		const ruleEndTimeD = new Date(`1970-01-01T${endWorkTime}:00Z`)
-
-		return leaveTimeD < ruleEndTimeD
+		const config = this.configService.config
+		for (const sh of config.shifts) {
+			if (sh.kind === employee.shift) {
+				const startWorkTime = sh.startTime
+				const endWorkTime = sh.endTime
+				const ruleStartTimeD = new Date(`1970-01-01T${startWorkTime}:00Z`)
+				const ruleEndTimeD = new Date(`1970-01-01T${endWorkTime}:00Z`)
+				return leaveTimeD < ruleEndTimeD
+			}
+		}
 	}
 }

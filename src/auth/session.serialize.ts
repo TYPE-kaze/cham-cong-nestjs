@@ -4,6 +4,7 @@ import { PassportSerializer } from "@nestjs/passport"
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
 	serializeUser(user, done): any { // what to save to session store after a cycle end
+		// user is whatever return by local strategy
 		done(null, user)
 	}
 

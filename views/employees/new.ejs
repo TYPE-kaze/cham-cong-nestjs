@@ -28,8 +28,9 @@
 					<div class="col-5">
 						<label for="shift" class="form-label">Ca làm việc</label>
 						<select class="form-select" id="shift" name="shift">
-							<option value="1"><%=workShifts[1].name%> (Từ <%=workShifts[1].startTime%> đến <%=workShifts[1].endTime%>)</option>
-							<option value="2"><%=workShifts[2].name%> (Từ <%=workShifts[2].startTime%> đến <%=workShifts[2].endTime%>)</option>
+							<% for (const shift of shifts) { %>
+							<option value="<%=shift.kind%>"> <%=shift.kind%> (<%=shift.startTime%> đến <%=shift.endTime%>)</option>
+							<% } %>
 						</select>
 					</div>
 				</div>

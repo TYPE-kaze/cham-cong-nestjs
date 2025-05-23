@@ -2,7 +2,7 @@ import { UUID } from 'node:crypto';
 import { Column, Model, Table, PrimaryKey, DataType, ForeignKey, BelongsTo, AllowNull, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
 import { Employee } from 'src/employees/employee.model';
 import { ConfigService } from 'src/config/config.service';
-const MS_PER_DAY = 86400000; // 1000 * 60 * 60 * 24
+import { ShiftRecord } from 'src/config/shift.model';
 @Table({ tableName: "records" })
 export class Record extends Model {
 	@PrimaryKey
@@ -19,6 +19,13 @@ export class Record extends Model {
 		allowNull: false,
 	})
 	date: string;
+
+	@ForeignKey(() => ShiftRecord)
+	@Column({ allowNull: true })
+	shiftID: number;
+
+	@BelongsTo(() => ShiftRecord)
+	shift: ShiftRecord
 
 	@Column({
 		type: DataType.TIME,

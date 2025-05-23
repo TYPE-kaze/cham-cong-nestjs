@@ -21,12 +21,12 @@ export class ConfigController {
 	}
 
 	@Post()
-	updateConfig(
+	async updateConfig(
 		@Body() updateConfigDTO: UpdateConfigDTO,
 		@Req() req,
 		@Res() res
 	) {
-		this.configService.updateConfig(updateConfigDTO)
+		await this.configService.updateConfig(updateConfigDTO)
 		req.flash('success', 'Cập nhật cài đặt thành công')
 		return res.redirect(req?.session?.returnTo ?? `/config`)
 	}
